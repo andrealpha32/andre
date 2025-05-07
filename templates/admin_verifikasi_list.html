@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Admin - Verifikasi Pengguna</title>
+</head>
+
+<body>
+  <h2>Daftar Verifikasi Pengguna</h2>
+
+  {% for user in pengguna %}
+  <div style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
+    <p><strong>Nama:</strong> {{ user.nama_lengkap }}</p>
+    <p><strong>Tempat/Tanggal Lahir:</strong> {{ user.tempat_lahir }} / {{ user.tanggal_lahir }}</p>
+    <p><strong>Jenis Kelamin:</strong> {{ user.jenis_kelamin }}</p>
+    <p><strong>Alamat:</strong> {{ user.alamat }}</p>
+    <p><strong>Asal Sekolah:</strong> {{ user.asal_sekolah }}</p>
+    <p><strong>No HP:</strong> {{ user.no_hp }}</p>
+
+    <p><strong>Foto:</strong><br>
+      <img src="{{ url_for('static', filename='uploads/' + user.foto_path.split('/')[-1]) }}" width="150">
+    </p>
+    <p><strong>Ijazah:</strong><br>
+      <a href="{{ url_for('static', filename='uploads/' + user.ijazah_path.split('/')[-1]) }}" target="_blank">Lihat
+        Ijazah</a>
+    </p>
+    <p><strong>Pembayaran:</strong><br>
+      <a href="{{ url_for('static', filename='uploads/' + user.pembayaran_path.split('/')[-1]) }}" target="_blank">Lihat
+        Bukti Pembayaran</a>
+    </p>
+
+    <p><strong>Status Verifikasi:</strong>
+      {% if user.verifikasi_status == 'approved' %}
+      ✅ Diterima
+      {% elif user.verifikasi_status == 'rejected' %}
+      ❌ Ditolak
+      {% else %}
+      ⏳ Menunggu Verifikasi
+      <br>
+      <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='terima') }}">✅ Terima</a> |
+      <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='tolak') }}">❌ Tolak</a>
+      {% endif %}
+    </p>
+  </div>
+  {% else %}
+  <p>Tidak ada data pengguna.</p>
+  {% endfor %}
+
+  <br>
+  <a href="{{ url_for('admin_dashboard_view') }}">⬅ Kembali ke Dashboard Admin</a>
+</body>
+
+</html>

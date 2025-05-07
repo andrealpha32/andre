@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Verifikasi Akun</title>
+</head>
+
+<body>
+  <h2>Selamat Datang!</h2>
+  
+  {% if pesan %}
+  <p style="color: blue;">{{ pesan }}</p>
+  {% endif %}
+<div class="toggle-link">
+  <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
+</div>
+<div class="toggle-link">
+  <p>ayo login!!! <a href="/login">login</a></p>
+<a href="{{ url_for('verifikasi') }}">Lengkapi Verifikasi Data</a>
+
+</div>
+</body>
+
+</html>

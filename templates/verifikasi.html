@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Verifikasi Akun</title>
+</head>
+
+<body>
+<h2>Formulir Verifikasi Data</h2>
+<form method="POST" enctype="multipart/form-data">
+  <input name="nama_lengkap" placeholder="Nama Lengkap" required><br>
+  <input name="tempat_lahir" placeholder="Tempat Lahir" required><br>
+  <input type="date" name="tanggal_lahir" required><br>
+  <select name="jenis_kelamin" required>
+    <option value="">Pilih Jenis Kelamin</option>
+    <option value="Laki-laki">Laki-laki</option>
+    <option value="Perempuan">Perempuan</option>
+  </select><br>
+  <textarea name="alamat" placeholder="Alamat Lengkap" required></textarea><br>
+  <input name="asal_sekolah" placeholder="Asal Sekolah" required><br>
+  <input name="no_hp" placeholder="Nomor HP" required><br>
+  <label>Foto Diri:</label><input type="file" name="foto" required><br>
+  <label>Ijazah:</label><input type="file" name="ijazah" required><br>
+  <label>Bukti Pembayaran:</label><input type="file" name="pembayaran" required><br>
+  <button type="submit">Kirim</button>
+</form>
+
+
+</body>
+
+</html>
