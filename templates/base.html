@@ -75,6 +75,29 @@
         .status-approved { background: #28a745; color: white; }
         .status-pending { background: #ffc107; color: black; }
         .status-rejected { background: #dc3545; color: white; }
+
+        .progress {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            height: 15px !important;
+        }
+        
+        .progress-bar {
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .progress-bar.bg-success {
+            background-color: #2ecc71 !important;
+        }
+        
+        .progress-bar.bg-warning {
+            background-color: #f1c40f !important;
+        }
+        
+        .progress-bar.bg-danger {
+            background-color: #e74c3c !important;
+        }
     </style>
 </head>
 <body>
@@ -96,6 +119,32 @@
                                 {% else %}status-rejected{% endif %}">
                                 {{ formulir.verifikasi_status|title }}
                             </span>
+                            <div class="progress mt-3">
+                                <div class="progress-bar {% if formulir.verifikasi_status == 'approved' %}bg-success
+                                    {% elif formulir.verifikasi_status == 'pending' %}bg-warning
+                                    {% else %}bg-danger{% endif %}"
+                                    role="progressbar"
+                                    style="width: {% if formulir.verifikasi_status == 'approved' %}100
+                                        {% elif formulir.verifikasi_status == 'pending' %}75
+                                        {% elif formulir %}50
+                                        {% else %}0{% endif %}%"
+                                    aria-valuenow="{% if formulir.verifikasi_status == 'approved' %}100
+                                        {% elif formulir.verifikasi_status == 'pending' %}75
+                                        {% elif formulir %}50
+                                        {% else %}0{% endif %}"
+                                    aria-valuemin="0"
+                                    aria-valuemax="100">
+                                </div>
+                            </div>
+                            <small class="text-white-50 mt-1 d-block">
+                                {% if formulir.verifikasi_status == 'approved' %}
+                                    Verifikasi Selesai (100%)
+                                {% elif formulir.verifikasi_status == 'pending' %}
+                                    Menunggu Persetujuan Admin (75%)
+                                {% else %}
+                                    Formulir Terisi (50%)
+                                {% endif %}
+                            </small>
                         {% endif %}
                     {% endif %}
                 </div>
