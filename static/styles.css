@@ -1,9 +1,17 @@
 /* Global Styles */
+:root {
+  --dark-bg: #1a1a1a;
+  --sidebar-bg: #2d2d2d;
+  --accent: #4CAF50;
+  --text: #ffffff;
+  --text-secondary: #b3b3b3;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
   margin: 0;
-  padding: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: var(--dark-bg);
+  color: var(--text);
 }
 
 .container {
@@ -18,6 +26,44 @@ body {
 h1 {
   text-align: center;
   color: #333;
+}
+
+/* Layout Styles */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: var(--sidebar-bg);
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar .logo {
+  font-size: 24px;
+  color: var(--accent);
+  margin-bottom: 30px;
+}
+
+.sidebar-menu a {
+  display: block;
+  color: var(--text);
+  text-decoration: none;
+  padding: 12px 15px;
+  margin: 5px 0;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.sidebar-menu a:hover {
+  background: var(--accent);
+}
+
+.main-content {
+  flex: 1;
+  padding: 30px;
 }
 
 /* Form Styles */
@@ -36,6 +82,58 @@ h1 {
   margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #333;
+  color: var(--text);
+  margin-top: 0.5rem;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.error-message {
+  color: #ff4444;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.form-footer {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.form-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.form-footer a:hover {
+  text-decoration: underline;
+}
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23fff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+}
+
+textarea.form-control {
+  min-height: 100px;
+  resize: vertical;
 }
 
 /* Button Styles */
@@ -70,6 +168,15 @@ button {
 
 button:last-child {
   margin-right: 0;
+}
+
+/* Card Styles */
+.card {
+  background: var(--sidebar-bg);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* List Styles */
@@ -125,4 +232,21 @@ td {
 
 th {
   background-color: #f2f2f2;
+}
+
+/* Button Styles */
+.btn {
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover {
+  opacity: 0.9;
 }

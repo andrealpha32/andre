@@ -1,134 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login/Register</title>
-    <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
 
-    .container {
-      background-color: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      width: 300px;
-    }
-
-    h2 {
-      text-align: center;
-      color: #333;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-    }
-
-    label {
-      margin: 10px 0 5px;
-      font-weight: bold;
-    }
-
-    input {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #218838;
-    }
-
-    .toggle-link {
-      text-align: center;
-      margin-top: 20px;
-    }
-
-    .toggle-link a {
-      text-decoration: none;
-      color: #007bff;
-    }
-
-    .toggle-link a:hover {
-      text-decoration: underline;
-    }
-
-    .error {
-      color: red;
-      text-align: center;
-    }
-  </style>
-  </head>
-
-  <body>
-    <div class="container">
-      <h2>Login Siswa/Orang Tua</h2>
-
-      <form action="/login" method="POST">
-        <label for="username">Nama Siswa:</label>
-        <input type="text" id="username" name="username" required><br>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br>
-
-        <button type="submit">Login</button>
-      </form>
-
-      <div class="toggle-link">
-        <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
+<body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">PPDB Online</div>
+      <div class="sidebar-menu">
+        <a href="/">Dashboard</a>
+        <a href="/register">Register</a>
+        <a href="{{ url_for('admin_login') }}">Login Admin</a>
       </div>
-
-      {% if error %}
-      <p class="error">{{ error }}</p>
-      {% endif %}
     </div>
 
-    <div class="container" style="display:none;" id="register-container">
-      <h2>Registrasi Akun</h2>
+    <div class="main-content">
+      <div class="card">
+        <h2>Login Siswa/Orang Tua</h2>
+        <form action="/login" method="POST" class="form">
+          <div class="form-group">
+            <label for="username">Nama Siswa:</label>
+            <input type="text" id="username" name="username" required class="form-control">
+          </div>
 
-      <form action="/register" method="POST">
-        <label for="new-username">Nama Siswa:</label>
-        <input type="text" id="new-username" name="username" required><br>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required class="form-control">
+          </div>
 
-        <label for="new-password">Password:</label>
-        <input type="password" id="new-password" name="password" required><br>
+          <button type="submit" class="btn">Login</button>
+        </form>
 
-        <label for="confirm-password">Konfirmasi Password:</label>
-        <input type="password" id="confirm-password" name="confirm_password"
-          required><br>
+        {% if error %}
+        <p class="error-message">{{ error }}</p>
+        {% endif %}
 
-        <button type="submit">Register</button>
-      </form>
-
-      <div class="toggle-link">
-        <p>Sudah punya akun? <a href="/login">Login di sini</a></p>
+        <div class="form-footer">
+          <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
+        </div>
       </div>
-
-      {% if register_error %}
-      <p class="error">{{ register_error }}</p>
-      {% endif %}
     </div>
-    <a href="{{ url_for('admin_login') }}" class="link-button">
-      <button type="button">Login Admin</button></a>
-  </body>
+  </div>
+</body>
 
 </html>

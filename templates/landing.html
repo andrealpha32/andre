@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Selamat Datang di PPDB Online{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-5 text-center">
+        <div class="col-12">
+            <h1 class="display-4">Selamat Datang di PPDB Online</h1>
+            <p class="lead">Sistem Penerimaan Peserta Didik Baru Online</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-1-circle fs-1 text-primary mb-3"></i>
+                    <h5 class="card-title">Langkah 1</h5>
+                    <p class="card-text">Registrasi akun dengan email valid</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-2-circle fs-1 text-primary mb-3"></i>
+                    <h5 class="card-title">Langkah 2</h5>
+                    <p class="card-text">Lengkapi formulir pendaftaran dan unggah dokumen</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="bi bi-3-circle fs-1 text-primary mb-3"></i>
+                    <h5 class="card-title">Langkah 3</h5>
+                    <p class="card-text">Tunggu verifikasi dari admin</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-3">Daftar Sekarang</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

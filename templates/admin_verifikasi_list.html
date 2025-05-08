@@ -3,51 +3,78 @@
 
 <head>
   <title>Admin - Verifikasi Pengguna</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
-  <h2>Daftar Verifikasi Pengguna</h2>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">Admin Panel</div>
+      <div class="sidebar-menu">
+        <a href="{{ url_for('admin_dashboard_view') }}">Dashboard</a>
+        <a href="{{ url_for('admin_verifikasi_list') }}">Verifikasi Pengguna</a>
+        <a href="{{ url_for('admin_logout') }}">Logout</a>
+      </div>
+    </div>
 
-  {% for user in pengguna %}
-  <div style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
-    <p><strong>Nama:</strong> {{ user.nama_lengkap }}</p>
-    <p><strong>Tempat/Tanggal Lahir:</strong> {{ user.tempat_lahir }} / {{ user.tanggal_lahir }}</p>
-    <p><strong>Jenis Kelamin:</strong> {{ user.jenis_kelamin }}</p>
-    <p><strong>Alamat:</strong> {{ user.alamat }}</p>
-    <p><strong>Asal Sekolah:</strong> {{ user.asal_sekolah }}</p>
-    <p><strong>No HP:</strong> {{ user.no_hp }}</p>
+    <div class="main-content">
+      <div class="card">
+        <h2>Daftar Verifikasi Pengguna</h2>
 
-    <p><strong>Foto:</strong><br>
-      <img src="{{ url_for('static', filename='uploads/' + user.foto_path.split('/')[-1]) }}" width="150">
-    </p>
-    <p><strong>Ijazah:</strong><br>
-      <a href="{{ url_for('static', filename='uploads/' + user.ijazah_path.split('/')[-1]) }}" target="_blank">Lihat
-        Ijazah</a>
-    </p>
-    <p><strong>Pembayaran:</strong><br>
-      <a href="{{ url_for('static', filename='uploads/' + user.pembayaran_path.split('/')[-1]) }}" target="_blank">Lihat
-        Bukti Pembayaran</a>
-    </p>
+        {% for user in pengguna %}
+        <div class="card">
+          <p><strong>Username:</strong> {{ user.username }}</p>
+          <p><strong>Nama:</strong> {{ user.formulir[0].nama_lengkap }}</p>
+          <p><strong>Tempat/Tanggal Lahir:</strong> {{ user.formulir[0].tempat_lahir }} / {{ user.formulir[0].tanggal_lahir
+            }}</p>
+          <p><strong>Jenis Kelamin:</strong> {{ user.formulir[0].jenis_kelamin }}</p>
+          <p><strong>Alamat:</strong> {{ user.formulir[0].alamat }}</p>
+          <p><strong>Asal Sekolah:</strong> {{ user.formulir[0].asal_sekolah }}</p>
+          <p><strong>No HP:</strong> {{ user.formulir[0].no_hp }}</p>
 
-    <p><strong>Status Verifikasi:</strong>
-      {% if user.verifikasi_status == 'approved' %}
-      ✅ Diterima
-      {% elif user.verifikasi_status == 'rejected' %}
-      ❌ Ditolak
-      {% else %}
-      ⏳ Menunggu Verifikasi
-      <br>
-      <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='terima') }}">✅ Terima</a> |
-      <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='tolak') }}">❌ Tolak</a>
-      {% endif %}
-    </p>
+          {% if user.formulir[0].foto_path %}
+          <p><strong>Foto:</strong><br>
+            <img src="{{ url_for('uploaded_file', filename=user.formulir[0].foto_path.split('/')[-1]) }}" width="150">
+          </p>
+          {% endif %}
+
+          {% if user.formulir[0].ijazah_path %}
+          <p><strong>Ijazah:</strong><br>
+            <a href="{{ url_for('uploaded_file', filename=user.formulir[0].ijazah_path.split('/')[-1]) }}" target="_blank">Lihat
+              Ijazah</a>
+          </p>
+          {% endif %}
+
+          {% if user.formulir[0].pembayaran_path %}
+          <p><strong>Pembayaran:</strong><br>
+            <a href="{{ url_for('uploaded_file', filename=user.formulir[0].pembayaran_path.split('/')[-1]) }}" target="_blank">Lihat
+              Bukti Pembayaran</a>
+          </p>
+          {% endif %}
+
+          <p><strong>Status Verifikasi:</strong>
+            {% if user.formulir[0].verifikasi_status == 'approved' %}
+            <span style="color: var(--accent)">✅ Diterima</span>
+            <br>
+            <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='tolak') }}" class="btn">❌ Ubah ke Tolak</a>
+            {% elif user.formulir[0].verifikasi_status == 'rejected' %}
+            <span style="color: #ff4444">❌ Ditolak</span>
+            <br>
+            <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='terima') }}" class="btn">✅ Ubah ke Terima</a>
+            {% else %}
+            <span style="color: #ffbb33">⏳ Menunggu Verifikasi</span>
+            <br>
+            <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='terima') }}" class="btn">✅ Terima</a>
+            <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='tolak') }}" class="btn">❌ Tolak</a>
+            {% endif %}
+          </p>
+        </div>
+        {% else %}
+        <p>Tidak ada data pengguna yang perlu diverifikasi.</p>
+        {% endfor %}
+      </div>
+    </div>
   </div>
-  {% else %}
-  <p>Tidak ada data pengguna.</p>
-  {% endfor %}
-
-  <br>
-  <a href="{{ url_for('admin_dashboard_view') }}">⬅ Kembali ke Dashboard Admin</a>
 </body>
 
 </html>

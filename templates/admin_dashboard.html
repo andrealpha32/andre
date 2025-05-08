@@ -2,23 +2,30 @@
 <html lang="id">
 
 <head>
-  <h1>Dashboard Admin</h1>
-  <p>Selamat datang, Admin!</p>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard</title>
-
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">Admin Panel</div>
+      <div class="sidebar-menu">
+        <a href="{{ url_for('admin_dashboard_view') }}">Dashboard</a>
+        <a href="{{ url_for('admin_verifikasi_list') }}">Verifikasi Pengguna</a>
+        <a href="{{ url_for('admin_logout') }}">Logout</a>
+      </div>
+    </div>
 
- 
-    
-    <a href="{{ url_for('admin_verifikasi_list') }}">Kelola Verifikasi Pengguna</a>
-    <a href="{{ url_for('admin_logout') }}" class="link-button">Logout Admin</a>
-  
-    <button type="submit">Tambah</button>
-  </form>
+    <div class="main-content">
+      <div class="card">
+        <h1>Dashboard Admin</h1>
+        <p>Selamat datang, Admin!</p>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

@@ -196,17 +196,17 @@ def verifikasi():
         if foto:
             foto_filename = secure_filename(foto.filename)
             foto.save(os.path.join(app.config['UPLOAD_FOLDER'], foto_filename))
-            formulir.foto_path = 'uploads/' + foto_filename  # Update path format
+            formulir.foto_path = foto_filename  # Store just the filename
 
         if ijazah:
             ijazah_filename = secure_filename(ijazah.filename)
             ijazah.save(os.path.join(app.config['UPLOAD_FOLDER'], ijazah_filename))
-            formulir.ijazah_path = 'uploads/' + ijazah_filename  # Update path format
+            formulir.ijazah_path = ijazah_filename  # Store just the filename
 
         if pembayaran:
             pembayaran_filename = secure_filename(pembayaran.filename)
             pembayaran.save(os.path.join(app.config['UPLOAD_FOLDER'], pembayaran_filename))
-            formulir.pembayaran_path = 'uploads/' + pembayaran_filename  # Update path format
+            formulir.pembayaran_path = pembayaran_filename  # Store just the filename
 
         db.session.add(formulir)
         db.session.commit()
@@ -357,7 +357,7 @@ def utility_processor():
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory('static/uploads', filename)  # Update path to match folder structure
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     with app.app_context():

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profil Saya</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Profil Saya</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Data Pribadi</h5>
+                {% if formulir %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Nama Lengkap:</strong> {{ formulir.nama_lengkap }}</p>
+                            <p><strong>Tempat Lahir:</strong> {{ formulir.tempat_lahir }}</p>
+                            <p><strong>Tanggal Lahir:</strong> {{ formulir.tanggal_lahir }}</p>
+                            <p><strong>Jenis Kelamin:</strong> {{ formulir.jenis_kelamin }}</p>
+                            <p><strong>Alamat:</strong> {{ formulir.alamat }}</p>
+                            <p><strong>Asal Sekolah:</strong> {{ formulir.asal_sekolah }}</p>
+                            <p><strong>No. HP:</strong> {{ formulir.no_hp }}</p>
+                            <p><strong>Status Verifikasi:</strong> {{ formulir.verifikasi_status }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if formulir.foto_path %}
+                            <p><strong>Foto:</strong><br>
+                                <img src="{{ url_for('uploaded_file', filename=formulir.foto_path) }}" 
+                                     class="img-fluid" style="max-width: 200px">
+                            </p>
+                            {% endif %}
+                            
+                            {% if formulir.ijazah_path %}
+                            <p><strong>Ijazah:</strong><br>
+                                <a href="{{ url_for('uploaded_file', filename=formulir.ijazah_path) }}" 
+                                   target="_blank">Lihat Ijazah</a>
+                            </p>
+                            {% endif %}
+                            
+                            {% if formulir.pembayaran_path %}
+                            <p><strong>Bukti Pembayaran:</strong><br>
+                                <a href="{{ url_for('uploaded_file', filename=formulir.pembayaran_path) }}" 
+                                   target="_blank">Lihat Bukti Pembayaran</a>
+                            </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <p>Anda belum mengisi formulir pendaftaran.</p>
+                    <a href="{{ url_for('verifikasi') }}" class="btn btn-primary">Isi Formulir</a>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3">Kembali ke Beranda</a>
+    </div>
+</body>
+</html>

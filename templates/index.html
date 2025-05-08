@@ -2,23 +2,84 @@
 <html>
 
 <head>
-  <title>Verifikasi Akun</title>
+  <title>PPDB Online</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
-  <h2>Selamat Datang!</h2>
-  
-  {% if pesan %}
-  <p style="color: blue;">{{ pesan }}</p>
-  {% endif %}
-<div class="toggle-link">
-  <p>Belum punya akun? <a href="/register">Daftar di sini</a></p>
-</div>
-<div class="toggle-link">
-  <p>ayo login!!! <a href="/login">login</a></p>
-<a href="{{ url_for('verifikasi') }}">Lengkapi Verifikasi Data</a>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="logo">PPDB Online</div>
+      <div class="sidebar-menu">
+        <a href="/login">Login</a>
+        <a href="/register">Register</a>
+        <a href="{{ url_for('verifikasi') }}">Verifikasi Data</a>
+      </div>
+    </div>
+    
+    <div class="main-content">
+      <div class="card">
+        {% extends "base.html" %}
 
-</div>
+        {% block title %}Dashboard PPDB Online{% endblock %}
+
+        {% block content %}
+        <div class="container">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h2 class="mb-4">Dashboard PPDB</h2>
+                    {% if pesan %}
+                        <div class="alert alert-info">{{ pesan }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Status Pendaftaran</h5>
+                            {% set formulir = get_user_formulir() %}
+                            {% if formulir %}
+                                <p class="card-text">
+                                    <strong>Nama:</strong> {{ formulir.nama_lengkap }}<br>
+                                    <strong>Status:</strong> 
+                                    <span class="status-badge 
+                                        {% if formulir.verifikasi_status == 'approved' %}status-approved
+                                        {% elif formulir.verifikasi_status == 'pending' %}status-pending
+                                        {% else %}status-rejected{% endif %}">
+                                        {{ formulir.verifikasi_status|title }}
+                                    </span>
+                                </p>
+                            {% else %}
+                                <p class="card-text">Anda belum mengisi formulir pendaftaran</p>
+                                <a href="{{ url_for('verifikasi') }}" class="btn btn-primary">Isi Formulir</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Informasi Akun</h5>
+                            <p class="card-text">
+                                <strong>Username:</strong> {{ user.username }}<br>
+                                <strong>Status Verifikasi:</strong> 
+                                {% if user.is_verified %}
+                                    <span class="badge bg-success">Terverifikasi</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Belum Terverifikasi</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% endblock %}
+      </div>
+    </div>
+  </div>
 </body>
-
 </html>

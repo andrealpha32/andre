@@ -3,29 +3,84 @@
 
 <head>
   <title>Verifikasi Akun</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 
 <body>
-<h2>Formulir Verifikasi Data</h2>
-<form method="POST" enctype="multipart/form-data">
-  <input name="nama_lengkap" placeholder="Nama Lengkap" required><br>
-  <input name="tempat_lahir" placeholder="Tempat Lahir" required><br>
-  <input type="date" name="tanggal_lahir" required><br>
-  <select name="jenis_kelamin" required>
-    <option value="">Pilih Jenis Kelamin</option>
-    <option value="Laki-laki">Laki-laki</option>
-    <option value="Perempuan">Perempuan</option>
-  </select><br>
-  <textarea name="alamat" placeholder="Alamat Lengkap" required></textarea><br>
-  <input name="asal_sekolah" placeholder="Asal Sekolah" required><br>
-  <input name="no_hp" placeholder="Nomor HP" required><br>
-  <label>Foto Diri:</label><input type="file" name="foto" required><br>
-  <label>Ijazah:</label><input type="file" name="ijazah" required><br>
-  <label>Bukti Pembayaran:</label><input type="file" name="pembayaran" required><br>
-  <button type="submit">Kirim</button>
-</form>
+  {% extends "base.html" %}
 
+  {% block title %}Form Pendaftaran{% endblock %}
 
+  {% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="mb-4">Formulir Pendaftaran</h2>
+        <div class="card">
+          <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Nama Lengkap</label>
+                  <input class="form-control" name="nama_lengkap" required
+                    value="{{ formulir.nama_lengkap if formulir }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Tempat Lahir</label>
+                  <input class="form-control" name="tempat_lahir" required
+                    value="{{ formulir.tempat_lahir if formulir }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Tanggal Lahir</label>
+                  <input type="date" class="form-control" name="tanggal_lahir" required
+                    value="{{ formulir.tanggal_lahir if formulir }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Jenis Kelamin</label>
+                  <select class="form-control" name="jenis_kelamin" required>
+                    <option value="">Pilih Jenis Kelamin</option>
+                    <option value="Laki-laki"
+                      {% if formulir.jenis_kelamin == 'Laki-laki' %}selected{% endif %}>Laki-laki</option>
+                    <option value="Perempuan"
+                      {% if formulir.jenis_kelamin == 'Perempuan' %}selected{% endif %}>Perempuan</option>
+                  </select>
+                </div>
+                <div class="col-12 mb-3">
+                  <label class="form-label">Alamat Lengkap</label>
+                  <textarea class="form-control" name="alamat" required>{{ formulir.alamat if formulir }}</textarea>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Asal Sekolah</label>
+                  <input class="form-control" name="asal_sekolah" required
+                    value="{{ formulir.asal_sekolah if formulir }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Nomor HP</label>
+                  <input class="form-control" name="no_hp" required value="{{ formulir.no_hp if formulir }}">
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Foto Diri</label>
+                  <input type="file" class="form-control" name="foto" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Ijazah</label>
+                  <input type="file" class="form-control" name="ijazah" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Bukti Pembayaran</label>
+                  <input type="file" class="form-control" name="pembayaran" required>
+                </div>
+              </div>
+              <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Kirim Formulir</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock %}
 </body>
 
 </html>
