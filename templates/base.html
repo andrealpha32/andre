@@ -6,8 +6,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --sidebar-width: 280px;
+            --primary-color: #4361ee;
+            --sidebar-width: 250px;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f8f9fd;
         }
         
         .wrapper {
@@ -17,35 +22,39 @@
 
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--primary-color);
-            color: white;
+            background: white;
+            color: #1a1a1a;
             position: fixed;
             height: 100vh;
             transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
         }
 
         .sidebar-header {
-            padding: 20px;
-            background: rgba(0,0,0,0.1);
+            padding: 25px 20px;
             text-align: center;
+            border-bottom: 1px solid #eee;
         }
 
         .sidebar-user img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 15px;
+            width: 65px;
+            height: 65px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 3px 10px rgba(67,97,238,0.1);
         }
 
         .nav-link {
-            color: rgba(255,255,255,0.8);
-            padding: 15px 25px;
-            transition: all 0.3s;
+            color: #666;
+            padding: 12px 20px;
+            transition: all 0.2s;
+            border-radius: 8px;
+            margin: 4px 12px;
         }
 
-        .nav-link:hover {
-            color: white;
-            background: rgba(255,255,255,0.1);
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            background: rgba(67,97,238,0.1);
         }
 
         .nav-link i {
@@ -54,27 +63,33 @@
 
         .content {
             margin-left: var(--sidebar-width);
-            padding: 20px;
+            padding: 30px;
             width: calc(100% - var(--sidebar-width));
             min-height: 100vh;
-            background: #f8f9fa;
         }
 
         .card {
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
 
         .status-badge {
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 500;
         }
 
-        .status-approved { background: #28a745; color: white; }
-        .status-pending { background: #ffc107; color: black; }
-        .status-rejected { background: #dc3545; color: white; }
+        .status-approved { background: #ecfdf3; color: #027948; }
+        .status-pending { background: #fff8e6; color: #946300; }
+        .status-rejected { background: #fee7e7; color: #c11574; }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
     </style>
 </head>
 <body>
@@ -111,6 +126,14 @@
                     <a href="{{ url_for('verifikasi') }}" class="nav-link">
                         <i class="bi bi-file-text"></i> Form Pendaftaran
                     </a>
+                    {% if session.user_id %}
+                        {% set formulir = get_user_formulir() %}
+                        {% if formulir and formulir.verifikasi_status == 'approved' %}
+                        <a href="{{ url_for('pembayaran') }}" class="nav-link">
+                            <i class="bi bi-credit-card"></i> Pembayaran
+                        </a>
+                        {% endif %}
+                    {% endif %}
                     <a href="{{ url_for('logout') }}" class="nav-link text-danger">
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>

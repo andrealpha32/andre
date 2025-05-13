@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Pembayaran{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-12">
+      <h2 class="mb-4">Upload Bukti Pembayaran</h2>
+      <div class="card">
+        <div class="card-body">
+          {% if formulir.pembayaran_status == 'approved' %}
+            <div class="alert alert-success">
+              Pembayaran Anda telah diverifikasi dan diterima.
+            </div>
+          {% elif formulir.pembayaran_status == 'pending' %}
+            <div class="alert alert-warning">
+              Pembayaran Anda sedang dalam proses verifikasi.
+            </div>
+          {% elif formulir.pembayaran_status == 'rejected' %}
+            <div class="alert alert-danger">
+              Pembayaran Anda ditolak. Silakan upload ulang bukti pembayaran yang valid.
+            </div>
+          {% endif %}
+
+          {% if formulir.pembayaran_status != 'approved' %}
+            <form method="POST" enctype="multipart/form-data">
+              <div class="mb-3">
+                <p class="mb-3">Silakan transfer ke rekening berikut:</p>
+                <div class="alert alert-info">
+                  <p class="mb-1"><strong>Bank BRI</strong></p>
+                  <p class="mb-1">No. Rekening: 1234-5678-9012-3456</p>
+                  <p class="mb-0">Atas Nama: NAMA SEKOLAH</p>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Upload Bukti Transfer</label>
+                <input type="file" class="form-control" name="pembayaran" accept="image/*" required>
+                <small class="text-muted">Format yang diterima: JPG, PNG, PDF. Maksimal 2MB</small>
+              </div>
+              <button type="submit" class="btn btn-primary">Kirim Bukti Pembayaran</button>
+            </form>
+          {% endif %}
+
+          {% if formulir.pembayaran_path %}
+            <div class="mt-4">
+              <h5>Bukti Pembayaran Terakhir</h5>
+              <img src="{{ url_for('uploaded_file', filename=formulir.pembayaran_path.split('/')[-1]) }}" 
+                   class="img-fluid" style="max-width: 300px">
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

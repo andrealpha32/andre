@@ -50,6 +50,7 @@ class Formulir(db.Model):
     foto_path = db.Column(db.String(200))
     ijazah_path = db.Column(db.String(200))
     pembayaran_path = db.Column(db.String(200))
+    pembayaran_status = db.Column(db.String(20), default='belum') # Add this line
 
     verifikasi_status = db.Column(db.String(20), default='belum')
 
@@ -359,8 +360,50 @@ def utility_processor():
 def uploaded_file(filename):
     return send_from_directory('static/uploads', filename)  # Update path to match folder structure
 
+@app.route('/pembayaran', methods=['GET', 'POST'])
+@login_required
+def pembayaran():
+    user = User.query.get(session['user_id'])
+    formulir = Formulir.query.filter_by(user_id=user.id).first()
+
+    if not formulir or formulir.verifikasi_status != 'approved':
+        flash('Anda harus disetujui terlebih dahulu sebelum melakukan pembayaran.')
+        return redirect(url_for('profile'))
+
+    if request.method == 'POST':
+        if 'pembayaran' in request.files:
+            pembayaran = request.files['pembayaran']
+            if pembayaran:
+                pembayaran_filename = secure_filename(pembayaran.filename)
+                pembayaran.save(os.path.join(app.config['UPLOAD_FOLDER'], pembayaran_filename))
+                formulir.pembayaran_path = 'uploads/' + pembayaran_filename
+                formulir.pembayaran_status = 'pending'
+                db.session.commit()
+                flash('Bukti pembayaran berhasil diunggah dan sedang diverifikasi.')
+                return redirect(url_for('profile'))
+
+    return render_template('pembayaran.html', user=user, formulir=formulir)
+
+@app.route('/admin/verifikasi_pembayaran/<int:user_id>/<action>')
+@admin_login_required
+def verifikasi_pembayaran(user_id, action):
+    formulir = Formulir.query.filter_by(user_id=user_id).first()
+    
+    if not formulir:
+        flash('Formulir tidak ditemukan.')
+        return redirect(url_for('admin_verifikasi_list'))
+
+    if action == 'terima':
+        formulir.pembayaran_status = 'approved'
+    elif action == 'tolak':
+        formulir.pembayaran_status = 'rejected'
+
+    db.session.commit()
+    flash(f'Status pembayaran berhasil diperbarui.')
+    return redirect(url_for('admin_verifikasi_list'))
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         create_admin()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

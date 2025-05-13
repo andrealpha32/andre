@@ -49,6 +49,22 @@
           <p><strong>Pembayaran:</strong><br>
             <a href="{{ url_for('uploaded_file', filename=user.formulir[0].pembayaran_path.split('/')[-1]) }}" target="_blank">Lihat
               Bukti Pembayaran</a>
+            <br>
+            <strong>Status Pembayaran:</strong>
+            {% if user.formulir[0].pembayaran_status == 'approved' %}
+              <span style="color: var(--accent)">✅ Diterima</span>
+              <br>
+              <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='tolak') }}" class="btn">❌ Ubah ke Tolak</a>
+            {% elif user.formulir[0].pembayaran_status == 'rejected' %}
+              <span style="color: #ff4444">❌ Ditolak</span>
+              <br>
+              <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='terima') }}" class="btn">✅ Ubah ke Terima</a>
+            {% elif user.formulir[0].pembayaran_status == 'pending' %}
+              <span style="color: #ffbb33">⏳ Menunggu Verifikasi</span>
+              <br>
+              <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='terima') }}" class="btn">✅ Terima</a>
+              <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='tolak') }}" class="btn">❌ Tolak</a>
+            {% endif %}
           </p>
           {% endif %}
 

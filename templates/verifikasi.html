@@ -13,6 +13,56 @@
 
   {% block content %}
   <div class="container">
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="mb-3">Status Verifikasi</h5>
+            {% if formulir %}
+            {% set progress = 100 if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
+                        else 75 if formulir.verifikasi_status == 'approved'
+                        else 50 if formulir.verifikasi_status == 'pending'
+                        else 25 if formulir.verifikasi_status == 'rejected'
+                        else 0 %}
+            <div class="progress" style="height: 25px;">
+              <div class="progress-bar {{ 'bg-success' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
+                                    else 'bg-info' if formulir.verifikasi_status == 'approved'
+                                    else 'bg-warning' if formulir.verifikasi_status == 'pending'
+                                    else 'bg-danger' }}" 
+                   role="progressbar" 
+                   style="width: {{ progress }}%"
+                   aria-valuenow="{{ progress }}" 
+                   aria-valuemin="0" 
+                   aria-valuemax="100">
+                {{ "Selesai" if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
+                   else "Menunggu Pembayaran" if formulir.verifikasi_status == 'approved'
+                   else formulir.verifikasi_status|title if formulir.verifikasi_status 
+                   else 'Belum Mengisi' }} - {{ progress }}%
+              </div>
+            </div>
+            <div class="small mt-2 text-muted">
+              {% if formulir.verifikasi_status == 'approved' %}
+                Selamat! Pendaftaran Anda telah disetujui
+              {% elif formulir.verifikasi_status == 'pending' %}
+                Menunggu verifikasi admin
+              {% elif formulir.verifikasi_status == 'rejected' %}
+                Pendaftaran ditolak, silahkan periksa kembali dokumen Anda
+              {% else %}
+                Silahkan lengkapi formulir pendaftaran
+              {% endif %}
+            </div>
+            {% else %}
+            <div class="progress" style="height: 25px;">
+              <div class="progress-bar bg-secondary" style="width: 25%">
+                Belum Mengisi
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-12">
         <h2 class="mb-4">Formulir Pendaftaran</h2>
@@ -65,10 +115,6 @@
                 <div class="col-md-4 mb-3">
                   <label class="form-label">Ijazah</label>
                   <input type="file" class="form-control" name="ijazah" required>
-                </div>
-                <div class="col-md-4 mb-3">
-                  <label class="form-label">Bukti Pembayaran</label>
-                  <input type="file" class="form-control" name="pembayaran" required>
                 </div>
               </div>
               <div class="mt-4">
