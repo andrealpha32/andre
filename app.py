@@ -406,4 +406,8 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         create_admin()
+<<<<<<< HEAD
     app.run(debug=True, host='0.0.0.0')
+=======
+    app.run(debug=True, host='0,0,0,0')
+>>>>>>> e4bc1f119402f65a917ec570ad3747e1134666ab
