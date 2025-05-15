@@ -1,265 +1,62 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>PPDB Online - Dashboard Siswa</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <style>
-        .stat-card {
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            background: white;
-        }
+{% extends "base.html" %}
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
+{% block title %}Dashboard PPDB Online{% endblock %}
 
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-bottom: 15px;
-        }
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h3 class="fw-bold mb-4">Selamat Datang di PPDB Online</h3>
+      {% if pesan %}
+      <div class="alert alert-info">{{ pesan }}</div>
+      {% endif %}
+    </div>
+  </div>
 
-        .progress-step {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-
-        .progress-label {
-            font-size: 0.85em;
-            margin-top: 8px;
-            text-align: center;
-        }
-
-        .quick-action {
-            padding: 15px;
-            border-radius: 12px;
-            background: #f8f9fa;
-            margin-bottom: 10px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .quick-action:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-
-        .quick-action i {
-            font-size: 1.2em;
-        }
-
-        .welcome-banner {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-    </style>
-</head>
-<body>
-    <div class="layout">
-        <div class="sidebar">
-            <div class="logo">PPDB Online</div>
-            <div class="sidebar-menu">
-                <a href="{{ url_for('index') }}" class="active">
-                    <i class="bi bi-house-door"></i> Dashboard
-                </a>
-                <a href="{{ url_for('verifikasi') }}">
-                    <i class="bi bi-file-text"></i> Form Pendaftaran
-                </a>
-                {% if formulir and formulir.verifikasi_status == 'approved' %}
-                <a href="{{ url_for('pembayaran') }}">
-                    <i class="bi bi-credit-card"></i> Pembayaran
-                </a>
-                {% endif %}
-                <a href="{{ url_for('profile') }}">
-                    <i class="bi bi-person"></i> Profil
-                </a>
-                <a href="{{ url_for('logout') }}">
-                    <i class="bi bi-box-arrow-right"></i> Keluar
-                </a>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Status Pendaftaran</h5>
+          {% set formulir = get_user_formulir() %}
+          {% if formulir %}
+          <div class="d-flex align-items-center mb-3">
+            <div class="status-badge 
+                        {% if formulir.verifikasi_status == 'approved' %}status-approved
+                        {% elif formulir.verifikasi_status == 'pending' %}status-pending
+                        {% else %}status-rejected{% endif %}">
+              {{ formulir.verifikasi_status|title }}
             </div>
+          </div>
+          <p class="card-text">
+            <strong>Nama:</strong> {{ formulir.nama_lengkap }}
+          </p>
+          {% else %}
+          <p class="card-text text-muted mb-3">Anda belum mengisi formulir pendaftaran</p>
+          <a href="{{ url_for('verifikasi') }}" class="btn btn-primary rounded-pill px-4">Isi Formulir</a>
+          {% endif %}
         </div>
-
-        <div class="main-content">
-            <div class="container-fluid py-4">
-                <div class="welcome-banner">
-                    <h3>Selamat Datang, {{ user.username }}! 👋</h3>
-                    <p class="mb-0">Selamat datang di Portal PPDB Online. Mari mulai perjalanan pendidikan Anda!</p>
-                </div>
-
-                {% if formulir %}
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="stat-card">
-                            <h5 class="mb-4">Status Pendaftaran</h5>
-                            <div class="d-flex justify-content-between position-relative mb-4">
-                                <div class="progress" style="height: 3px; width: 100%; position: absolute; top: 50%; transform: translateY(-50%);">
-                                    <div class="progress-bar bg-{{ 'success' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
-                                        else 'warning' if formulir.verifikasi_status == 'approved' or formulir.verifikasi_status == 'pending'
-                                        else 'danger' }}" 
-                                        style="width: {{ progress }}%;"></div>
-                                </div>
-                                
-                                <div class="text-center">
-                                    <div class="progress-step bg-{{ 'success' if formulir.verifikasi_status != '' else 'secondary' }} text-white">1</div>
-                                    <div class="progress-label">Pengisian Form</div>
-                                </div>
-                                
-                                <div class="text-center">
-                                    <div class="progress-step bg-{{ 'success' if formulir.verifikasi_status == 'approved' 
-                                        else 'warning' if formulir.verifikasi_status == 'pending'
-                                        else 'secondary' }} text-white">2</div>
-                                    <div class="progress-label">Verifikasi</div>
-                                </div>
-                                
-                                <div class="text-center">
-                                    <div class="progress-step bg-{{ 'success' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
-                                        else 'warning' if formulir.pembayaran_status == 'pending'
-                                        else 'secondary' }} text-white">3</div>
-                                    <div class="progress-label">Pembayaran</div>
-                                </div>
-                                
-                                <div class="text-center">
-                                    <div class="progress-step bg-{{ 'success' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
-                                        else 'secondary' }} text-white">4</div>
-                                    <div class="progress-label">Selesai</div>
-                                </div>
-                            </div>
-                            
-                            <div class="alert alert-{{ 'success' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
-                                else 'warning' if formulir.verifikasi_status == 'pending'
-                                else 'danger' if formulir.verifikasi_status == 'rejected'
-                                else 'info' }} mt-4 mb-0">
-                                {% if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved' %}
-                                    <i class="bi bi-check-circle"></i> Selamat! Pendaftaran Anda telah selesai
-                                {% elif formulir.verifikasi_status == 'approved' %}
-                                    <i class="bi bi-info-circle"></i> Silakan lakukan pembayaran untuk menyelesaikan pendaftaran
-                                {% elif formulir.verifikasi_status == 'pending' %}
-                                    <i class="bi bi-clock"></i> Formulir sedang dalam proses verifikasi
-                                {% elif formulir.verifikasi_status == 'rejected' %}
-                                    <i class="bi bi-exclamation-circle"></i> Formulir ditolak, silakan periksa kembali data Anda
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <div class="stat-card">
-                            <h5 class="mb-4">Aksi Cepat</h5>
-                            {% if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status != 'approved' %}
-                            <a href="{{ url_for('pembayaran') }}" class="quick-action text-decoration-none text-dark">
-                                <i class="bi bi-credit-card"></i>
-                                <span>Upload Pembayaran</span>
-                            </a>
-                            {% endif %}
-                            <a href="{{ url_for('verifikasi') }}" class="quick-action text-decoration-none text-dark">
-                                <i class="bi bi-pencil-square"></i>
-                                <span>Edit Formulir</span>
-                            </a>
-                            <a href="{{ url_for('profile') }}" class="quick-action text-decoration-none text-dark">
-                                <i class="bi bi-person"></i>
-                                <span>Lihat Profil</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                <div class="stat-card text-center py-5">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1162/1162499.png" 
-                         alt="Start" style="width: 120px; margin-bottom: 20px;">
-                    <h4>Mulai Pendaftaran Anda</h4>
-                    <p class="text-muted">Anda belum mengisi formulir pendaftaran</p>
-                    <a href="{{ url_for('verifikasi') }}" class="btn btn-primary btn-lg mt-3">
-                        <i class="bi bi-file-text me-2"></i>Isi Formulir Sekarang
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    {% if formulir and formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved' %}
-    <script>
-        // Function to create celebratory effects
-        function celebrate() {
-            // Fancy continuous confetti
-            var end = Date.now() + (5 * 1000); // Confetti for 5 seconds
-
-            // Go Buckeyes!
-            var colors = ['#4361ee', '#48bfe3', '#gold', '#white'];
-
-            (function frame() {
-                confetti({
-                    particleCount: 2,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: colors
-                });
-                confetti({
-                    particleCount: 2,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: colors
-                });
-
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
-                }
-            }());
-
-            // Fire stars
-            setTimeout(function() {
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    shapes: ['star'],
-                    colors: colors
-                });
-            }, 500);
-
-            // Firework effect
-            setTimeout(function() {
-                confetti({
-                    particleCount: 150,
-                    spread: 120,
-                    origin: { x: 0.5, y: 0.8 }
-                });
-            }, 1000);
-        }
-
-        // Call celebration when page loads
-        window.onload = function() {
-            celebrate();
-        };
-    </script>
-    {% endif %}
-</body>
-</html>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Informasi Akun</h5>
+          <p class="card-text mb-2">
+            <strong>Username:</strong> {{ user.username }}
+          </p>
+          <div class="d-flex align-items-center">
+            <strong class="me-2">Status:</strong>
+            {% if user.is_verified %}
+            <span class="status-badge status-approved">Terverifikasi</span>
+            {% else %}
+            <span class="status-badge status-pending">Belum Terverifikasi</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
