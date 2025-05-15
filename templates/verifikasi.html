@@ -19,25 +19,29 @@
           <div class="card-body">
             <h5 class="mb-3">Status Verifikasi</h5>
             {% if formulir %}
-            {% set progress = 100 if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
-                        else 75 if formulir.verifikasi_status == 'approved'
-                        else 50 if formulir.verifikasi_status == 'pending'
-                        else 25 if formulir.verifikasi_status == 'rejected'
-                        else 0 %}
-            <div class="progress" style="height: 25px;">
-              <div class="progress-bar {{ 'bg-success' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
-                                    else 'bg-info' if formulir.verifikasi_status == 'approved'
-                                    else 'bg-warning' if formulir.verifikasi_status == 'pending'
-                                    else 'bg-danger' }}" 
-                   role="progressbar" 
-                   style="width: {{ progress }}%"
-                   aria-valuenow="{{ progress }}" 
-                   aria-valuemin="0" 
-                   aria-valuemax="100">
-                {{ "Selesai" if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved'
-                   else "Menunggu Pembayaran" if formulir.verifikasi_status == 'approved'
-                   else formulir.verifikasi_status|title if formulir.verifikasi_status 
-                   else 'Belum Mengisi' }} - {{ progress }}%
+            <div class="d-flex justify-content-between position-relative mb-4">
+              <div class="progress" style="height: 3px; width: 100%; position: absolute; top: 50%; transform: translateY(-50%);">
+                <div class="progress-bar {% if formulir.verifikasi_status != '' %}bg-success{% endif %}" style="width: {{ progress }}%;"></div>
+              </div>
+              
+              <div class="position-relative">
+                <div class="rounded-circle bg-{{ 'success' if formulir.verifikasi_status != '' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">1</div>
+                <div class="small mt-2">Pengisian Form</div>
+              </div>
+              
+              <div class="position-relative">
+                <div class="rounded-circle bg-{{ 'success' if formulir.verifikasi_status == 'pending' or formulir.verifikasi_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">2</div>
+                <div class="small mt-2">Verifikasi</div>
+              </div>
+              
+              <div class="position-relative">
+                <div class="rounded-circle bg-{{ 'success' if formulir.verifikasi_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">3</div>
+                <div class="small mt-2">Pembayaran</div>
+              </div>
+              
+              <div class="position-relative">
+                <div class="rounded-circle bg-{{ 'success' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">4</div>
+                <div class="small mt-2">Selesai</div>
               </div>
             </div>
             <div class="small mt-2 text-muted">
@@ -104,15 +108,28 @@
                   <input class="form-control" name="asal_sekolah" required
                     value="{{ formulir.asal_sekolah if formulir }}">
                 </div>
+
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Nomor HP</label>
-                  <input class="form-control" name="no_hp" required value="{{ formulir.no_hp if formulir }}">
+                  <label class="form-label">No. HP</label>
+                  <input class="form-control" name="no_hp" type="tel" required 
+                    value="{{ formulir.no_hp if formulir }}">
                 </div>
-                <div class="col-md-4 mb-3">
+
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Jurusan yang Dipilih</label>
+                  <select class="form-control" name="jurusan" required>
+                    <option value="">Pilih Jurusan</option>
+                    <option value="IPA" {% if formulir.jurusan == 'IPA' %}selected{% endif %}>IPA</option>
+                    <option value="IPS" {% if formulir.jurusan == 'IPS' %}selected{% endif %}>IPS</option>
+                    <option value="Bahasa" {% if formulir.jurusan == 'Bahasa' %}selected{% endif %}>Bahasa</option>
+                  </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
                   <label class="form-label">Foto Diri</label>
                   <input type="file" class="form-control" name="foto" required>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-6 mb-3">
                   <label class="form-label">Ijazah</label>
                   <input type="file" class="form-control" name="ijazah" required>
                 </div>

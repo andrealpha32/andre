@@ -35,7 +35,7 @@ class User(db.Model):
   
 class Formulir(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Correct table name
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = db.relationship('User', back_populates='formulir')
 
     # Data diri yang akan disimpan di Formulir
@@ -45,22 +45,38 @@ class Formulir(db.Model):
     jenis_kelamin = db.Column(db.String(20))
     alamat = db.Column(db.String(200))
     asal_sekolah = db.Column(db.String(200))
+    jurusan = db.Column(db.String(100))
     no_hp = db.Column(db.String(20))
     
     foto_path = db.Column(db.String(200))
     ijazah_path = db.Column(db.String(200))
     pembayaran_path = db.Column(db.String(200))
-    pembayaran_status = db.Column(db.String(20), default='belum') # Add this line
-
+    pembayaran_status = db.Column(db.String(20), default='belum')
     verifikasi_status = db.Column(db.String(20), default='belum')
 
+class Payment(db.Model):
+    __tablename__ = 'payments'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    formulir_id = db.Column(db.Integer, db.ForeignKey('formulir.id'), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending, approved, rejected
+    timestamp = db.Column(db.DateTime, server_default=db.func.now())
+    verification_timestamp = db.Column(db.DateTime)
+    rejection_reason = db.Column(db.String(200))
 
+    user = db.relationship('User')
+    formulir = db.relationship('Formulir')
 
+# Configure upload folder
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Login check decorator
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+
 def login_required(f):
     def wrapper(*args, **kwargs):
         if 'user_id' not in session:
@@ -70,50 +86,6 @@ def login_required(f):
     wrapper.__name__ = f.__name__
     return wrapper
 
-# Fungsi untuk membuat sesi permanen
-@app.before_request
-def make_session_permanent():
-    session.permanent = True
-
-@app.route('/admin_dashboard')
-def admin_dashboard():
-    return render_template('admin_dashboard.html')
-
-
-# Rute untuk login admin
-@app.route('/admin_login', methods=['GET', 'POST'])
-def admin_login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        # Query user from database
-        user = User.query.filter_by(username=username).first()
-        
-        if user and user.is_admin and check_password_hash(user.password, password):
-            session['admin_logged_in'] = True
-            session['user_id'] = user.id
-            flash('Login admin berhasil.')
-            return redirect(url_for('admin_dashboard'))
-        else:
-            # More detailed error message
-            if not user:
-                flash('Username tidak ditemukan.')
-            elif not user.is_admin:
-                flash('Akun ini bukan admin.')
-            else:
-                flash('Password salah.')
-            
-    return render_template('admin_login.html')  # Ensure a return statement for GET requests
-
-# Rute untuk logout admin
-@app.route('/admin_logout')
-def admin_logout():
-    session.pop('admin_logged_in', None)  # Hapus sesi admin
-    flash('Anda telah berhasil logout sebagai admin.')
-    return redirect(url_for('admin_login'))
-
-# Login check decorator khusus untuk admin
 def admin_login_required(f):
     def wrapper(*args, **kwargs):
         if 'admin_logged_in' not in session:
@@ -123,14 +95,72 @@ def admin_login_required(f):
     wrapper.__name__ = f.__name__
     return wrapper
 
-# Tetapkan nama endpoint secara eksplisit
 @app.route('/admin_dashboard', endpoint="admin_dashboard_view")
 @admin_login_required
 def admin_dashboard():
-    return render_template('admin_dashboard.html')
+    # Get all formulir data
+    all_formulir = Formulir.query.all()
+    total_pendaftar = len(all_formulir)
+    
+    # Status statistics
+    diterima = Formulir.query.filter_by(verifikasi_status='approved').count()
+    ditolak = Formulir.query.filter_by(verifikasi_status='rejected').count()
+    pending = Formulir.query.filter_by(verifikasi_status='pending').count()
+    
+    # Jurusan statistics
+    jurusan_counts = {}
+    for formulir in all_formulir:
+        if formulir.jurusan:
+            jurusan_counts[formulir.jurusan] = jurusan_counts.get(formulir.jurusan, 0) + 1
+    
+    # Payment statistics
+    pembayaran_diterima = Formulir.query.filter_by(pembayaran_status='approved').count()
+    pembayaran_pending = Formulir.query.filter_by(pembayaran_status='pending').count()
+    pembayaran_ditolak = Formulir.query.filter_by(pembayaran_status='rejected').count()
+    
+    # Recent registrations (last 5)
+    recent_registrations = Formulir.query.order_by(Formulir.id.desc()).limit(5).all()
 
+    return render_template('admin_dashboard.html',
+                         total_pendaftar=total_pendaftar,
+                         diterima=diterima,
+                         ditolak=ditolak,
+                         pending=pending,
+                         jurusan_counts=jurusan_counts,
+                         pembayaran_diterima=pembayaran_diterima,
+                         pembayaran_pending=pembayaran_pending,
+                         pembayaran_ditolak=pembayaran_ditolak,
+                         recent_registrations=recent_registrations)
 
-# Rute untuk Login
+@app.route('/admin_login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = User.query.filter_by(username=username).first()
+        
+        if user and user.is_admin and check_password_hash(user.password, password):
+            session['admin_logged_in'] = True
+            session['user_id'] = user.id
+            flash('Login admin berhasil.')
+            return redirect(url_for('admin_dashboard_view'))  # Change this line to use correct endpoint
+        else:
+            if not user:
+                flash('Username tidak ditemukan.')
+            elif not user.is_admin:
+                flash('Akun ini bukan admin.')
+            else:
+                flash('Password salah.')
+                
+    return render_template('admin_login.html')
+
+@app.route('/admin_logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    flash('Anda telah berhasil logout sebagai admin.')
+    return redirect(url_for('admin_login'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -149,28 +179,19 @@ def login():
             return redirect(url_for('index'))
         else:
             flash('Username atau password salah. Coba lagi.')
-    
+        
     return render_template('login.html')
 
-
-# Folder untuk menyimpan file upload
-UPLOAD_FOLDER = 'static/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# verivikasi
 @app.route('/verifikasi', methods=['GET', 'POST'])
 @login_required
 def verifikasi():
     user = User.query.get(session.get('user_id'))
-
     if not user:
         flash("User tidak ditemukan. Silakan login ulang.")
         return redirect(url_for('logout'))
 
-    # Get existing formulir
     formulir = Formulir.query.filter_by(user_id=user.id).first()
     
-    # If no formulir exists, create new one
     if not formulir and request.method == 'GET':
         formulir = Formulir(user_id=user.id)
         db.session.add(formulir)
@@ -180,34 +201,25 @@ def verifikasi():
         if not formulir:
             formulir = Formulir(user_id=user.id)
 
+        # Update formulir data
         formulir.nama_lengkap = request.form['nama_lengkap']
         formulir.tempat_lahir = request.form['tempat_lahir']
         formulir.tanggal_lahir = request.form['tanggal_lahir']
         formulir.jenis_kelamin = request.form['jenis_kelamin']
         formulir.alamat = request.form['alamat']
         formulir.asal_sekolah = request.form['asal_sekolah']
+        formulir.jurusan = request.form['jurusan']
         formulir.no_hp = request.form['no_hp']
         formulir.verifikasi_status = 'pending'
 
-        # Handle file uploads with corrected paths
-        foto = request.files.get('foto')
-        ijazah = request.files.get('ijazah')
-        pembayaran = request.files.get('pembayaran')
-
-        if foto:
-            foto_filename = secure_filename(foto.filename)
-            foto.save(os.path.join(app.config['UPLOAD_FOLDER'], foto_filename))
-            formulir.foto_path = 'uploads/' + foto_filename  # Update path format
-
-        if ijazah:
-            ijazah_filename = secure_filename(ijazah.filename)
-            ijazah.save(os.path.join(app.config['UPLOAD_FOLDER'], ijazah_filename))
-            formulir.ijazah_path = 'uploads/' + ijazah_filename  # Update path format
-
-        if pembayaran:
-            pembayaran_filename = secure_filename(pembayaran.filename)
-            pembayaran.save(os.path.join(app.config['UPLOAD_FOLDER'], pembayaran_filename))
-            formulir.pembayaran_path = 'uploads/' + pembayaran_filename  # Update path format
+        # Handle file uploads
+        for field in ['foto', 'ijazah', 'pembayaran']:
+            if field in request.files:
+                file = request.files[field]
+                if file:
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    setattr(formulir, f'{field}_path', f'uploads/{filename}')
 
         db.session.add(formulir)
         db.session.commit()
@@ -222,9 +234,9 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        
+                
         try:
-            # Validasi format email
+            # Validasi format emailil
             validate_email(username)
 
             # Validasi panjang password
@@ -235,7 +247,7 @@ def register():
             if User.query.filter_by(username=username).first():
                 flash('Username sudah ada. Silakan pilih yang lain.')
             else:
-                hashed_password = generate_password_hash(password)  # Menggunakan hashing default
+                hashed_password = generate_password_hash(password)
                 new_user = User(username=username, password=hashed_password)
                 db.session.add(new_user)
                 db.session.commit()
@@ -275,8 +287,6 @@ def proses_verifikasi(user_id, action):
     flash(f'Verifikasi untuk {user.username} berhasil di-{action}.')
     return redirect(url_for('admin_verifikasi_list'))
 
-
-
 # Rute Utama Index
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -285,6 +295,11 @@ def index():
         
     user = User.query.get(session['user_id'])
     formulir = Formulir.query.filter_by(user_id=user.id).first()
+
+    # Get statistics for dashboard
+    total_pendaftar = Formulir.query.count()
+    verified_count = Formulir.query.filter_by(verifikasi_status='approved').count()
+    pending_count = Formulir.query.filter_by(verifikasi_status='pending').count()
 
     if formulir:
         if formulir.verifikasi_status == 'pending':
@@ -298,7 +313,13 @@ def index():
     else:
         pesan = ""
 
-    return render_template('index.html', user=user, formulir=formulir, pesan=pesan)
+    return render_template('index.html', 
+                         user=user, 
+                         formulir=formulir, 
+                         pesan=pesan,
+                         total_pendaftar=total_pendaftar,
+                         verified_count=verified_count,
+                         pending_count=pending_count)
 
 @app.route('/profile')
 @login_required
@@ -335,7 +356,7 @@ def create_admin():
     if not admin:
         # Create admin user
         admin_password = generate_password_hash('admin123')
-        admin = User(username='admin@admin.com', 
+        admin = User(username='admin@admin.com',
                     password=admin_password,
                     is_admin=True,
                     is_verified=True)
@@ -358,7 +379,7 @@ def utility_processor():
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory('static/uploads', filename)  # Update path to match folder structure
+    return send_from_directory('static/uploads', filename)
 
 @app.route('/pembayaran', methods=['GET', 'POST'])
 @login_required
@@ -402,12 +423,49 @@ def verifikasi_pembayaran(user_id, action):
     flash(f'Status pembayaran berhasil diperbarui.')
     return redirect(url_for('admin_verifikasi_list'))
 
+@app.route('/admin/payments')
+@admin_login_required
+def admin_payment_list():
+    payments = db.session.query(Payment).join(Formulir).order_by(Payment.timestamp.desc()).all()
+    return render_template('admin_payment_verification.html', payments=payments)
+
+@app.route('/admin/verify-payment/<int:id>', methods=['POST'])
+@admin_login_required
+def admin_verify_payment(id):
+    payment = Payment.query.get_or_404(id)
+    payment.status = 'approved'
+    payment.verification_timestamp = datetime.now()
+    
+    # Update formulir payment status
+    formulir = payment.formulir
+    formulir.pembayaran_status = 'approved'
+    formulir.pembayaran_timestamp = datetime.now()
+    
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
+@app.route('/admin/reject-payment/<int:id>', methods=['POST'])
+@admin_login_required
+def admin_reject_payment(id):
+    data = request.get_json()
+    if not data or 'reason' not in data:
+        return jsonify({'error': 'Reason is required'}), 400
+        
+    payment = Payment.query.get_or_404(id)
+    payment.status = 'rejected'
+    payment.rejection_reason = data['reason']
+    payment.verification_timestamp = datetime.now()
+    
+    # Update formulir payment status
+    formulir = payment.formulir
+    formulir.pembayaran_status = 'rejected'
+    formulir.pembayaran_timestamp = datetime.now()
+    
+    db.session.commit()
+    return jsonify({'status': 'success'})
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         create_admin()
-<<<<<<< HEAD
     app.run(debug=True, host='0.0.0.0')
-=======
-    app.run(debug=True, host='0,0,0,0')
->>>>>>> e4bc1f119402f65a917ec570ad3747e1134666ab

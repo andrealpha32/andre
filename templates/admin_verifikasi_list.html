@@ -4,56 +4,34 @@
 <head>
     <title>Admin - Verifikasi Pengguna</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
     <style>
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 15px;
         }
 
-        .user-card {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .user-info {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 15px;
-            font-size: 0.9rem;
-        }
-
-        .user-info p {
-            margin: 5px 0;
-        }
-
-        .user-info strong {
-            width: 100px;
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 3px 8px;
+            border-radius: 12px;
             display: inline-block;
         }
 
-        .documents-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin: 10px 0;
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
         }
 
-        .doc-item {
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            text-align: center;
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
         }
 
-        .doc-item img {
-            max-width: 100px;
-            border-radius: 4px;
-            margin: 5px auto;
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
         }
 
         .btn {
@@ -80,30 +58,12 @@
             background: #dc3545;
         }
 
-        .status-badge {
-            font-size: 0.8rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            display: inline-block;
+        .btn-success {
+            background: #28a745;
         }
 
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-approved {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .actions {
-            text-align: right;
+        .btn-danger {
+            background: #dc3545;
         }
     </style>
 </head>
@@ -123,72 +83,122 @@
             <div class="container">
                 <h2>Daftar Verifikasi Pengguna</h2>
 
-                {% for user in pengguna %}
-                <div class="user-card">
-                    <div class="user-info">
-                        <div>
-                            <p><strong>Username:</strong> {{ user.username }}</p>
-                            <p><strong>Nama:</strong> {{ user.formulir[0].nama_lengkap }}</p>
-                            <p><strong>TTL:</strong> {{ user.formulir[0].tempat_lahir }}, {{ user.formulir[0].tanggal_lahir
-                                }}</p>
-                        </div>
-                        <div>
-                            <p><strong>Sekolah:</strong> {{ user.formulir[0].asal_sekolah }}</p>
-                            <p><strong>No HP:</strong> {{ user.formulir[0].no_hp }}</p>
-                            <p>
-                                <strong>Status:</strong>
+                <table id="userTable" class="display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Nama Lengkap</th>
+                            <th>TTL</th>
+                            <th>Asal Sekolah</th>
+                            <th>Jurusan</th>
+                            <th>No HP</th>
+                            <th>Status</th>
+                            <th>Status Pembayaran</th>
+                            <th>Dokumen</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in pengguna %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.formulir[0].nama_lengkap }}</td>
+                            <td>{{ user.formulir[0].tempat_lahir }}, {{ user.formulir[0].tanggal_lahir }}</td>
+                            <td>{{ user.formulir[0].asal_sekolah }}</td>
+                            <td>{{ user.formulir[0].jurusan }}</td>
+                            <td>{{ user.formulir[0].no_hp }}</td>
+                            <td>
                                 <span class="status-badge {{ user.formulir[0].verifikasi_status }}-status">
                                     {% if user.formulir[0].verifikasi_status == 'approved' %}✓
                                     {% elif user.formulir[0].verifikasi_status == 'rejected' %}✗
                                     {% else %}⏳{% endif %}
                                 </span>
-                            </p>
-                        </div>
-                    </div>
+                            </td>
+                            <td>
+                                <span class="status-badge {{ user.formulir[0].pembayaran_status }}-status">
+                                    {% if user.formulir[0].pembayaran_status == 'approved' %}✓
+                                    {% elif user.formulir[0].pembayaran_status == 'rejected' %}✗
+                                    {% elif user.formulir[0].pembayaran_status == 'pending' %}⏳
+                                    {% else %}-{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.formulir[0].foto_path %}
+                                <a href="{{ url_for('uploaded_file', filename=user.formulir[0].foto_path.split('/')[-1]) }}"
+                                    target="_blank" class="btn btn-view">Foto</a>
+                                {% endif %}
 
-                    <div class="documents-grid">
-                        {% if user.formulir[0].foto_path %}
-                        <div class="doc-item">
-                            <small>Foto</small>
-                            <a href="{{ url_for('uploaded_file', filename=user.formulir[0].foto_path.split('/')[-1]) }}"
-                                target="_blank" class="btn btn-view">Lihat</a>
-                        </div>
-                        {% endif %}
+                                {% if user.formulir[0].ijazah_path %}
+                                <a href="{{ url_for('uploaded_file', filename=user.formulir[0].ijazah_path.split('/')[-1]) }}"
+                                    target="_blank" class="btn btn-view">Ijazah</a>
+                                {% endif %}
 
-                        {% if user.formulir[0].ijazah_path %}
-                        <div class="doc-item">
-                            <small>Ijazah</small>
-                            <a href="{{ url_for('uploaded_file', filename=user.formulir[0].ijazah_path.split('/')[-1]) }}"
-                                target="_blank" class="btn btn-view">Lihat</a>
-                        </div>
-                        {% endif %}
+                                {% if user.formulir[0].pembayaran_path %}
+                                <a href="{{ url_for('uploaded_file', filename=user.formulir[0].pembayaran_path.split('/')[-1]) }}"
+                                    target="_blank" class="btn btn-view">Pembayaran</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.formulir[0].verifikasi_status != 'approved' %}
+                                <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='terima') }}"
+                                    class="btn btn-approve">Terima</a>
+                                {% endif %}
+                                {% if user.formulir[0].verifikasi_status != 'rejected' %}
+                                <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='tolak') }}"
+                                    class="btn btn-reject">Tolak</a>
+                                {% endif %}
 
-                        {% if user.formulir[0].pembayaran_path %}
-                        <div class="doc-item">
-                            <small>Pembayaran</small>
-                            <a href="{{ url_for('uploaded_file', filename=user.formulir[0].pembayaran_path.split('/')[-1]) }}"
-                                target="_blank" class="btn btn-view">Lihat</a>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="actions">
-                        {% if user.formulir[0].verifikasi_status != 'approved' %}
-                        <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='terima') }}"
-                            class="btn btn-approve">Terima</a>
-                        {% endif %}
-                        {% if user.formulir[0].verifikasi_status != 'rejected' %}
-                        <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='tolak') }}"
-                            class="btn btn-reject">Tolak</a>
-                        {% endif %}
-                    </div>
-                </div>
-                {% else %}
-                <p>Tidak ada data pengguna yang perlu diverifikasi.</p>
-                {% endfor %}
+                                {% if user.formulir[0].verifikasi_status == 'approved' and user.formulir[0].pembayaran_status == 'pending' %}
+                                    <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='terima') }}" 
+                                       class="btn btn-success">Verifikasi Pembayaran</a>
+                                    <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='tolak') }}" 
+                                       class="btn btn-danger">Tolak Pembayaran</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Add custom sorting for status column
+            $.fn.dataTable.ext.type.order['status-pre'] = function (data) {
+                if (data.includes('⏳')) return 1;  // Pending status
+                if (data.includes('✓')) return 2;  // Approved status
+                if (data.includes('✗')) return 3;  // Rejected status
+                return 4;  // Other status
+            };
+
+            $('#userTable').DataTable({
+                pageLength: 10,
+                columnDefs: [{
+                    targets: 7, // Status column index
+                    type: 'status'
+                }],
+                order: [[7, 'asc']], // Sort by status column by default
+                language: {
+                    search: "Cari:",
+                    lengthMenu: "Tampilkan _MENU_ data per halaman",
+                    zeroRecords: "Tidak ada data yang ditemukan",
+                    info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                    infoEmpty: "Tidak ada data yang tersedia",
+                    infoFiltered: "(difilter dari _MAX_ total data)",
+                    paginate: {
+                        first: "Pertama",
+                        last: "Terakhir",
+                        next: "Selanjutnya",
+                        previous: "Sebelumnya"
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

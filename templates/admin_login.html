@@ -47,6 +47,8 @@
       </div>
     </div>
   </div>
+  <!-- Make sure there's a return URL for successful login -->
+  <input type="hidden" name="next" value="{{ url_for('admin_dashboard_view') }}">
 </body>
 
 </html>

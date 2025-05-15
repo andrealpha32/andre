@@ -60,6 +60,7 @@
                             <p><strong>Jenis Kelamin:</strong> {{ formulir.jenis_kelamin }}</p>
                             <p><strong>Alamat:</strong> {{ formulir.alamat }}</p>
                             <p><strong>Asal Sekolah:</strong> {{ formulir.asal_sekolah }}</p>
+                            <p><strong>Jurusan:</strong> {{ formulir.jurusan }}</p>
                             <p><strong>No. HP:</strong> {{ formulir.no_hp }}</p>
                             <p><strong>Status Verifikasi:</strong> {{ formulir.verifikasi_status }}</p>
                         </div>
@@ -91,13 +92,20 @@
                     <div class="mt-3">
                         <h5>Status Pembayaran</h5>
                         {% if formulir.pembayaran_status == 'approved' %}
-                            <div class="alert alert-success">Pembayaran telah diverifikasi</div>
+                            <div class="alert alert-success">Pembayaran telah diverifikasi dan diterima</div>
                         {% elif formulir.pembayaran_status == 'pending' %}
                             <div class="alert alert-warning">Pembayaran sedang diverifikasi</div>
+                        {% elif formulir.pembayaran_status == 'rejected' %}
+                            <div class="alert alert-danger">
+                                Pembayaran ditolak. Silakan upload ulang bukti pembayaran yang valid.
+                                <a href="{{ url_for('pembayaran') }}" class="btn btn-primary mt-2">Upload Ulang Pembayaran</a>
+                            </div>
                         {% else %}
                             <div class="alert alert-info">
-                                Pendaftaran Anda telah disetujui. Silakan lakukan pembayaran.
-                                <a href="{{ url_for('pembayaran') }}" class="btn btn-primary mt-2">Upload Pembayaran</a>
+                                Belum melakukan pembayaran
+                                {% if formulir.verifikasi_status == 'approved' %}
+                                    <a href="{{ url_for('pembayaran') }}" class="btn btn-primary mt-2">Upload Pembayaran</a>
+                                {% endif %}
                             </div>
                         {% endif %}
                     </div>
