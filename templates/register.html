@@ -12,38 +12,49 @@
   {% extends "base.html" %}
 
   {% block title %}Register{% endblock %}
-  {% block page_title %}Register{% endblock %}
 
   {% block content %}
-  <div class="row justify-content-center mt-3">
-    <div class="col-md-6">
-      <div class="card shadow-sm">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="text-center mb-4">
+        <h3 class="fw-bold text-primary mb-2">PPDB Online</h3>
+        <p class="text-muted">Daftar akun baru</p>
+      </div>
+
+      <div class="card">
         <div class="card-body p-4">
-          <h4 class="card-title text-center mb-4">Daftar Akun</h4>
-          <form action="/register" method="POST">
-            <div class="mb-3">
-              <label class="form-label">Email</label>
-              <input type="text" name="username" class="form-control" placeholder="Masukkan email" required>
+          <form action="/register" method="POST" class="needs-validation" novalidate>
+            <div class="mb-4">
+              <label class="form-label fw-medium">Email</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="bi bi-envelope text-muted"></i>
+                </span>
+                <input type="email" name="username" class="form-control border-start-0 ps-0" required
+                  placeholder="Masukkan email">
+              </div>
             </div>
 
-            <div class="mb-3">
-              <label class="form-label">Password</label>
-              <input type="password" name="password" class="form-control" placeholder="Masukkan password" required>
+            <div class="mb-4">
+              <label class="form-label fw-medium">Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0">
+                  <i class="bi bi-lock text-muted"></i>
+                </span>
+                <input type="password" name="password" class="form-control border-start-0 ps-0" required
+                  placeholder="Masukkan password">
+              </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-lg w-100">Daftar</button>
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+              <i class="bi bi-person-plus me-2"></i>Daftar
+            </button>
 
-            {% if error %}
-            <div class="alert alert-danger mt-3">{{ error }}</div>
-            {% endif %}
-
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-danger mt-3">{{ message }}</div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
+            <div class="text-center">
+              <p class="mb-0">Sudah punya akun?
+                <a href="{{ url_for('login') }}" class="text-primary fw-medium">Login</a>
+              </p>
+            </div>
           </form>
         </div>
       </div>

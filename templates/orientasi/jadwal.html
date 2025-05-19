@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Jadwal Orientasi{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h3 class="fw-bold mb-4">
+        <i class="bi bi-calendar2-week text-primary me-2"></i>
+        Jadwal Orientasi Siswa Baru
+      </h3>
+    </div>
+  </div>
+
+  <div class="row">
+    {% for hari in range(1, 4) %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-primary bg-opacity-10 py-3">
+          <h5 class="mb-0">
+            <i class="bi bi-calendar2-check text-primary me-2"></i>
+            Hari {{ hari }}
+          </h5>
+          <small class="text-muted">{{ hari + 14 }} Juli 2024</small>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            {% for kegiatan in [
+              {'waktu': '07.30 - 08.30', 'acara': 'Upacara Pembukaan', 'tempat': 'Lapangan Utama'},
+              {'waktu': '08.30 - 10.00', 'acara': 'Pengenalan Lingkungan', 'tempat': 'Gedung Sekolah'},
+              {'waktu': '10.00 - 12.00', 'acara': 'Materi Pembelajaran', 'tempat': 'Aula'},
+              {'waktu': '12.00 - 13.00', 'acara': 'ISHOMA', 'tempat': '-'},
+              {'waktu': '13.00 - 15.00', 'acara': 'Ekstrakurikuler', 'tempat': 'Berbagai Lokasi'}
+            ] %}
+            <div class="timeline-item">
+              <div class="timeline-time">{{ kegiatan.waktu }}</div>
+              <div class="timeline-content">
+                <h6 class="mb-1">{{ kegiatan.acara }}</h6>
+                <small class="text-muted">
+                  <i class="bi bi-geo-alt me-1"></i>
+                  {{ kegiatan.tempat }}
+                </small>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+.timeline {
+  position: relative;
+  padding: 0;
+}
+
+.timeline-item {
+  padding: 15px 0;
+  border-left: 2px solid #e9ecef;
+  padding-left: 20px;
+  position: relative;
+}
+
+.timeline-item:before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  background: var(--primary-color);
+  border-radius: 50%;
+  position: absolute;
+  left: -7px;
+  top: 20px;
+}
+
+.timeline-time {
+  font-size: 0.875rem;
+  color: var(--primary-color);
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.timeline-content {
+  background: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+</style>
+{% endblock %}

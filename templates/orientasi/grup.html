@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Grup WhatsApp Siswa Baru{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h3 class="fw-bold mb-4">
+        <i class="bi bi-whatsapp text-success me-2"></i>
+        Grup WhatsApp Siswa Baru
+      </h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body text-center p-5">
+          <img src="https://chart.googleapis.com/chart?cht=qr&chl=https://chat.whatsapp.com/example&chs=300x300" 
+               alt="QR Code Grup" class="img-fluid mb-4" style="max-width: 200px;">
+          <h5 class="mb-3">Grup WhatsApp Kelas {{ formulir.jurusan }}</h5>
+          <p class="text-muted mb-4">Scan QR code atau klik tombol di bawah untuk bergabung</p>
+          <a href="https://chat.whatsapp.com/example" target="_blank" 
+             class="btn btn-success btn-lg">
+            <i class="bi bi-whatsapp me-2"></i>Gabung Grup
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body p-4">
+          <h5 class="card-title mb-4">
+            <i class="bi bi-info-circle text-primary me-2"></i>
+            Peraturan Grup
+          </h5>
+          <div class="rules-list">
+            <div class="rule-item mb-3 p-3 bg-light rounded-3">
+              <div class="d-flex">
+                <span class="rule-number">1</span>
+                <div>
+                  <h6 class="mb-1">Gunakan Nama Asli</h6>
+                  <p class="mb-0 text-muted small">Format: Nama_Jurusan_NoUrut</p>
+                </div>
+              </div>
+            </div>
+            <div class="rule-item mb-3 p-3 bg-light rounded-3">
+              <div class="d-flex">
+                <span class="rule-number">2</span>
+                <div>
+                  <h6 class="mb-1">Hormati Sesama Anggota</h6>
+                  <p class="mb-0 text-muted small">Jaga kesopanan dalam berkomunikasi</p>
+                </div>
+              </div>
+            </div>
+            <div class="rule-item mb-3 p-3 bg-light rounded-3">
+              <div class="d-flex">
+                <span class="rule-number">3</span>
+                <div>
+                  <h6 class="mb-1">Ikuti Arahan Admin</h6>
+                  <p class="mb-0 text-muted small">Patuhi instruksi dari admin grup</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.rule-number {
+  width: 30px;
+  height: 30px;
+  background: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+.rule-item {
+  transition: transform 0.2s;
+}
+
+.rule-item:hover {
+  transform: translateX(5px);
+}
+</style>
+{% endblock %}

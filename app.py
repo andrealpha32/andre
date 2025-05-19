@@ -464,6 +464,42 @@ def admin_reject_payment(id):
     db.session.commit()
     return jsonify({'status': 'success'})
 
+@app.route('/jadwal-orientasi')
+@login_required
+def jadwal_orientasi():
+    formulir = Formulir.query.filter_by(user_id=session['user_id']).first()
+    if not formulir or formulir.pembayaran_status != 'approved':
+        flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
+        return redirect(url_for('index'))
+    return render_template('orientasi/jadwal.html')
+
+@app.route('/materi-persiapan')
+@login_required
+def materi_persiapan():
+    formulir = Formulir.query.filter_by(user_id=session['user_id']).first()
+    if not formulir or formulir.pembayaran_status != 'approved':
+        flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
+        return redirect(url_for('index'))
+    return render_template('orientasi/materi.html')
+
+@app.route('/grup-wa')
+@login_required
+def grup_wa():
+    formulir = Formulir.query.filter_by(user_id=session['user_id']).first()
+    if not formulir or formulir.pembayaran_status != 'approved':
+        flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
+        return redirect(url_for('index'))
+    return render_template('orientasi/grup.html')
+
+@app.route('/forum-siswa')
+@login_required
+def forum_siswa():
+    formulir = Formulir.query.filter_by(user_id=session['user_id']).first()
+    if not formulir or formulir.pembayaran_status != 'approved':
+        flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
+        return redirect(url_for('index'))
+    return render_template('orientasi/forum.html')
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

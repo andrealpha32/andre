@@ -7,13 +7,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
   <style>
     :root {
-      --primary-color: #4361ee;
-      --sidebar-width: 250px;
+      --primary-color: #2563eb;
+      --secondary-color: #3b82f6;
+      --sidebar-width: 280px;
     }
 
     body {
-      font-family: 'Inter', -apple-system, sans-serif;
-      background: #f8f9fd;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #334155;
     }
 
     .wrapper {
@@ -23,135 +25,174 @@
 
     .sidebar {
       width: var(--sidebar-width);
-      background: white;
-      color: #1a1a1a;
+      background: #ffffff;
+      color: #1e293b;
       position: fixed;
       height: 100vh;
+      display: flex;
+      flex-direction: column;
       transition: all 0.3s;
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-      overflow-y: auto;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
       z-index: 1000;
     }
 
-    .sidebar::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    .sidebar::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 3px;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
-
     .sidebar-header {
-      padding: 25px 20px;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .sidebar-brand img {
+      width: 40px;
+      height: 40px;
+      margin-right: 1rem;
+    }
+
+    .sidebar-brand h4 {
+      color: #1e293b;
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .sidebar-user {
       text-align: center;
-      border-bottom: 1px solid #eee;
+      padding: 1rem 0;
     }
 
     .sidebar-user img {
-      width: 65px;
-      height: 65px;
+      width: 70px;
+      height: 70px;
       border-radius: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 3px 10px rgba(67, 97, 238, 0.1);
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      padding: 3px;
+    }
+
+    .sidebar-menu {
+      padding: 1rem;
+      flex-grow: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    /* Add custom scrollbar styling */
+    .sidebar-menu::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .sidebar-menu::-webkit-scrollbar-track {
+      background: #f1f1f1;
+    }
+
+    .sidebar-menu::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+
+    .sidebar-menu::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+
+    .nav-section {
+      margin-bottom: 1rem;
+    }
+
+    .nav-section-title {
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .nav-link {
-      color: #666;
-      padding: 12px 20px;
-      transition: all 0.2s;
+      color: #64748b;
+      padding: 0.75rem 1rem;
       border-radius: 8px;
-      margin: 4px 12px;
+      margin: 0.125rem 0;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
     }
 
-    .nav-link:hover,
-    .nav-link.active {
+    .nav-link:hover {
       color: var(--primary-color);
-      background: rgba(67, 97, 238, 0.1);
+      background: rgba(37, 99, 235, 0.05);
+      transform: translateX(5px);
+    }
+
+    .nav-link.active {
+      color: white;
+      background: var(--primary-color);
     }
 
     .nav-link i {
-      margin-right: 10px;
+      font-size: 1.25rem;
+      margin-right: 0.75rem;
+      opacity: 0.8;
     }
 
     .content {
       margin-left: var(--sidebar-width);
-      padding: 30px;
+      padding: 2rem;
       width: calc(100% - var(--sidebar-width));
-      min-height: 100vh;
-      position: relative;
     }
 
     .card {
       border: none;
       border-radius: 12px;
-      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
-      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
 
     .status-badge {
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.85em;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.875rem;
       font-weight: 500;
+      letter-spacing: 0.025em;
     }
 
     .status-approved {
-      background: #ecfdf3;
-      color: #027948;
+      background: #dcfce7;
+      color: #166534;
     }
 
     .status-pending {
-      background: #fff8e6;
-      color: #946300;
+      background: #fef9c3;
+      color: #854d0e;
     }
 
     .status-rejected {
-      background: #fee7e7;
-      color: #c11574;
-    }
-
-    .alert {
-      border-radius: 10px;
-      border: none;
+      background: #fee2e2;
+      color: #991b1b;
     }
 
     .progress {
-      background-color: #e9ecef;
-      border-radius: 10px;
-      height: 10px !important;
-      margin: 10px 0;
+      height: 8px !important;
+      border-radius: 999px;
+      overflow: hidden;
     }
 
-    .progress-bar {
-      border-radius: 10px;
-      transition: width 0.3s ease;
-    }
-
-    .progress-bar.bg-success {
-      background-color: #28a745 !important;
-    }
-
-    .progress-bar.bg-warning {
-      background-color: #ffc107 !important;
-    }
-
-    .progress-bar.bg-danger {
-      background-color: #dc3545 !important;
-    }
-
-    .progress-status {
-      font-size: 12px;
-      margin-top: 5px;
-      color: #6c757d;
+    .alert {
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
   </style>
 </head>
@@ -161,74 +202,114 @@
     <!-- Sidebar -->
     <nav class="sidebar">
       <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <img src="https://ui-avatars.com/api/?name=PPDB&background=2563eb&color=fff" alt="Logo">
+          <h4>PPDB Online</h4>
+        </div>
+        
+        {% if session.user_id %}
+        <!-- Logged in user info -->
         <div class="sidebar-user">
-          <img src="https://ui-avatars.com/api/?name={{ user.username if user else 'User' }}&background=random"
-            alt="Profile">
-          {% if session.user_id %}
           {% set user = get_current_user() %}
-          <h5 class="mb-2">{{ user.username }}</h5>
+          <img src="https://ui-avatars.com/api/?name={{ user.username }}&background=random" alt="Profile">
+          <h6 class="mt-3 mb-1">{{ user.username }}</h6>
           {% set formulir = get_user_formulir() %}
           {% if formulir %}
-          <p class="mb-2">{{ formulir.nama_lengkap }}</p>
           <span class="status-badge 
-                                {% if formulir.verifikasi_status == 'approved' %}status-approved
-                                {% elif formulir.verifikasi_status == 'pending' %}status-pending
-                                {% else %}status-rejected{% endif %}">
+                    {% if formulir.verifikasi_status == 'approved' %}status-approved
+                    {% elif formulir.verifikasi_status == 'pending' %}status-pending
+                    {% else %}status-rejected{% endif %}">
             {{ formulir.verifikasi_status|title }}
           </span>
-          <div class="progress">
-            {% set progress = {
-              'approved': 100,
-              'pending': 66,
-              'rejected': 33,
-              'none': 0
-            } %}
-            <div class="progress-bar {% if formulir.verifikasi_status == 'approved' %}bg-success
-                                    {% elif formulir.verifikasi_status == 'pending' %}bg-warning
-                                    {% else %}bg-danger{% endif %}" 
-                 role="progressbar" 
-                 style="width: {{ progress[formulir.verifikasi_status|default('none')] }}%" 
-                 aria-valuenow="{{ progress[formulir.verifikasi_status|default('none')] }}" 
-                 aria-valuemin="0" 
-                 aria-valuemax="100">
-            </div>
-          </div>
-          <div class="progress-status">
-            {% if formulir.verifikasi_status == 'approved' %}
-            Verifikasi Selesai
-            {% elif formulir.verifikasi_status == 'pending' %}
-            Sedang Diproses
-            {% else %}
-            Belum Diverifikasi
-            {% endif %}
-            ({{ progress[formulir.verifikasi_status|default('none')] }}%)
-          </div>
-          {% endif %}
           {% endif %}
         </div>
+        {% endif %}
       </div>
-      <div class="sidebar-menu mt-4">
-        <div class="nav flex-column">
-          <a href="{{ url_for('index') }}" class="nav-link {{ 'active' if request.endpoint == 'index' }}">
-            <i class="bi bi-house-door"></i> Beranda
-          </a>
-          <a href="{{ url_for('profile') }}" class="nav-link {{ 'active' if request.endpoint == 'profile' }}">
-            <i class="bi bi-person"></i> Profil Saya
-          </a>
-          <a href="{{ url_for('verifikasi') }}" class="nav-link {{ 'active' if request.endpoint == 'verifikasi' }}">
-            <i class="bi bi-file-text"></i> Form Pendaftaran
-          </a>
-          {% if session.user_id %}
-          {% set formulir = get_user_formulir() %}
-          {% if formulir and formulir.verifikasi_status == 'approved' %}
-          <a href="{{ url_for('pembayaran') }}" class="nav-link {{ 'active' if request.endpoint == 'pembayaran' }}">
-            <i class="bi bi-credit-card"></i> Pembayaran
-          </a>
-          {% endif %}
-          {% endif %}
-          <a href="{{ url_for('logout') }}" class="nav-link text-danger">
-            <i class="bi bi-box-arrow-right"></i> Logout
-          </a>
+
+      <div class="sidebar-menu">
+        <div class="nav-section">
+          <div class="nav-section-title">Menu</div>
+          <div class="nav flex-column">
+            {% if not session.user_id %}
+            <!-- Menu untuk tamu -->
+            <a href="{{ url_for('index') }}" class="nav-link {{ 'active' if request.endpoint == 'index' }}">
+              <i class="bi bi-house-door"></i>
+              <span>Beranda</span>
+            </a>
+            <a href="{{ url_for('login') }}" class="nav-link {{ 'active' if request.endpoint == 'login' }}">
+              <i class="bi bi-box-arrow-in-right"></i>
+              <span>Login</span>
+            </a>
+            <a href="{{ url_for('register') }}" class="nav-link {{ 'active' if request.endpoint == 'register' }}">
+              <i class="bi bi-person-plus"></i>
+              <span>Daftar</span>
+            </a>
+
+            {% elif session.get('admin_logged_in') %}
+            <!-- Menu untuk admin -->
+            <a href="{{ url_for('admin_dashboard_view') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_dashboard_view' }}">
+              <i class="bi bi-speedometer2"></i>
+              <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin_verifikasi_list') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_verifikasi_list' }}">
+              <i class="bi bi-check-circle"></i>
+              <span>Verifikasi Pendaftar</span>
+            </a>
+            <a href="{{ url_for('admin_logout') }}" class="nav-link text-danger">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout Admin</span>
+            </a>
+
+            {% else %}
+            <!-- Menu untuk user yang sudah login -->
+            <a href="{{ url_for('index') }}" class="nav-link {{ 'active' if request.endpoint == 'index' }}">
+              <i class="bi bi-house-door"></i>
+              <span>Beranda</span>
+            </a>
+            <a href="{{ url_for('profile') }}" class="nav-link {{ 'active' if request.endpoint == 'profile' }}">
+              <i class="bi bi-person"></i>
+              <span>Profil Saya</span>
+            </a>
+            <a href="{{ url_for('verifikasi') }}" class="nav-link {{ 'active' if request.endpoint == 'verifikasi' }}">
+              <i class="bi bi-file-earmark-text"></i>
+              <span>Form Pendaftaran</span>
+            </a>
+            {% set formulir = get_user_formulir() %}
+            {% if formulir and formulir.verifikasi_status == 'approved' %}
+            <a href="{{ url_for('pembayaran') }}" class="nav-link {{ 'active' if request.endpoint == 'pembayaran' }}">
+              <i class="bi bi-credit-card"></i>
+              <span>Pembayaran</span>
+            </a>
+            
+            {# Add new section for 100% completed users #}
+            {% if formulir.pembayaran_status == 'approved' %}
+            <div class="nav-section-title mt-4">Informasi Siswa Baru</div>
+            <a href="{{ url_for('jadwal_orientasi') }}" class="nav-link {{ 'active' if request.endpoint == 'jadwal_orientasi' }}">
+              <i class="bi bi-calendar2-week"></i>
+              <span>Jadwal Orientasi</span>
+            </a>
+            <a href="{{ url_for('materi_persiapan') }}" class="nav-link {{ 'active' if request.endpoint == 'materi_persiapan' }}">
+              <i class="bi bi-journal-text"></i>
+              <span>Materi Persiapan</span>
+            </a>
+            <a href="{{ url_for('grup_wa') }}" class="nav-link {{ 'active' if request.endpoint == 'grup_wa' }}">
+              <i class="bi bi-whatsapp"></i>
+              <span>Grup WhatsApp</span>
+            </a>
+            <a href="{{ url_for('forum_siswa') }}" class="nav-link {{ 'active' if request.endpoint == 'forum_siswa' }}">
+              <i class="bi bi-people"></i>
+              <span>Forum Siswa</span>
+            </a>
+            {% endif %}
+            {% endif %}
+
+            <div class="nav-section-title mt-4">Pengaturan</div>
+            <a href="{{ url_for('logout') }}" class="nav-link text-danger">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Keluar</span>
+            </a>
+            {% endif %}
+          </div>
         </div>
       </div>
     </nav>

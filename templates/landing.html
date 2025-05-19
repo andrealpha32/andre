@@ -4,16 +4,30 @@
 
 {% block content %}
 <div class="container">
-  <div class="row mb-5 text-center">
+  <!-- Hero Section -->
+  <div class="row mb-5">
     <div class="col-12">
-      <h1 class="display-4">Selamat Datang di PPDB Online</h1>
-      <p class="lead">Sistem Penerimaan Peserta Didik Baru Online</p>
+      <div class="card bg-primary text-white overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=80" 
+             class="card-img opacity-50" alt="School Building"
+             style="height: 300px; object-fit: cover;">
+        <div class="card-img-overlay d-flex align-items-center">
+          <div class="text-center w-100">
+            <h1 class="display-4 fw-bold">Selamat Datang di PPDB Online</h1>
+            <p class="lead">Sistem Penerimaan Peserta Didik Baru Online</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Steps Section -->
   <div class="row mb-4">
     <div class="col-md-4 mb-4">
       <div class="card h-100">
+        <img src="https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?auto=format&fit=crop&w=500&q=60" 
+             class="card-img-top" alt="Registration"
+             style="height: 200px; object-fit: cover;">
         <div class="card-body text-center">
           <i class="bi bi-1-circle fs-1 text-primary mb-3"></i>
           <h5 class="card-title">Langkah 1</h5>
@@ -23,6 +37,9 @@
     </div>
     <div class="col-md-4 mb-4">
       <div class="card h-100">
+        <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=500&q=60" 
+             class="card-img-top" alt="Fill Form"
+             style="height: 200px; object-fit: cover;">
         <div class="card-body text-center">
           <i class="bi bi-2-circle fs-1 text-primary mb-3"></i>
           <h5 class="card-title">Langkah 2</h5>
@@ -32,10 +49,122 @@
     </div>
     <div class="col-md-4 mb-4">
       <div class="card h-100">
+        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=60" 
+             class="card-img-top" alt="Verification"
+             style="height: 200px; object-fit: cover;">
         <div class="card-body text-center">
           <i class="bi bi-3-circle fs-1 text-primary mb-3"></i>
           <h5 class="card-title">Langkah 3</h5>
           <p class="card-text">Tunggu verifikasi dari admin</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5 mt-5">
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body position-relative">
+          <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=150&q=60"
+               class="position-absolute top-0 end-0 m-3 rounded-circle"
+               style="width: 60px; height: 60px; object-fit: cover;" alt="Calendar">
+          <h4 class="card-title text-primary mb-4">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            Pengumuman Penting
+          </h4>
+          <ul class="list-unstyled">
+            <li class="mb-3">
+              <i class="bi bi-calendar-event text-secondary me-2"></i>
+              Pendaftaran dibuka: 1 Juni - 30 Juli 2024
+            </li>
+            <li class="mb-3">
+              <i class="bi bi-clock text-secondary me-2"></i>
+              Pengumuman hasil: 5 Agustus 2024
+            </li>
+            <li class="mb-3">
+              <i class="bi bi-person-badge text-secondary me-2"></i>
+              Kuota penerimaan: 250 siswa
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <div class="card h-100">
+        <div class="card-body position-relative">
+          <img src="https://images.unsplash.com/photo-1568992687947-868a62a9f521?auto=format&fit=crop&w=150&q=60"
+               class="position-absolute top-0 end-0 m-3 rounded-circle"
+               style="width: 60px; height: 60px; object-fit: cover;" alt="Documents">
+          <h4 class="card-title text-primary mb-4">
+            <i class="bi bi-file-text-fill me-2"></i>
+            Persyaratan Dokumen
+          </h4>
+          <ul class="list-unstyled">
+            <li class="mb-3">
+              <i class="bi bi-check2-circle text-success me-2"></i>
+              Ijazah/Surat Keterangan Lulus
+            </li>
+            <li class="mb-3">
+              <i class="bi bi-check2-circle text-success me-2"></i>
+              Akta Kelahiran
+            </li>
+            <li class="mb-3">
+              <i class="bi bi-check2-circle text-success me-2"></i>
+              Kartu Keluarga
+            </li>
+            <li class="mb-3">
+              <i class="bi bi-check2-circle text-success me-2"></i>
+              Pas Foto 3x4 (latar belakang merah)
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h4 class="card-title text-primary mb-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            Catatan Penting
+          </h4>
+          <div class="row">
+            <div class="col-md-6">
+              <ul class="list-unstyled">
+                <li class="mb-3">
+                  <i class="bi bi-arrow-right text-primary me-2"></i>
+                  Pastikan data yang diisi sesuai dengan dokumen asli
+                </li>
+                <li class="mb-3">
+                  <i class="bi bi-arrow-right text-primary me-2"></i>
+                  Ukuran file maksimal 2MB per dokumen
+                </li>
+                <li class="mb-3">
+                  <i class="bi bi-arrow-right text-primary me-2"></i>
+                  Format file yang diterima: PDF, JPG, PNG
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <ul class="list-unstyled">
+                <li class="mb-3">
+                  <i class="bi bi-arrow-right text-primary me-2"></i>
+                  Pendaftaran yang sudah diverifikasi tidak dapat diubah
+                </li>
+                <li class="mb-3">
+                  <i class="bi bi-arrow-right text-primary me-2"></i>
+                  Informasi lebih lanjut hubungi panitia PPDB
+                </li>
+                <li class="mb-3">
+                  <i class="bi bi-arrow-right text-primary me-2"></i>
+                  Keputusan panitia bersifat mutlak dan tidak dapat diganggu gugat
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -48,4 +177,18 @@
     </div>
   </div>
 </div>
+
+<!-- Add CSS for image animations -->
+<style>
+.card img.card-img-top {
+  transition: transform 0.3s ease-in-out;
+}
+.card:hover img.card-img-top {
+  transform: scale(1.05);
+}
+.rounded-circle {
+  border: 3px solid #2563eb;
+  padding: 2px;
+}
+</style>
 {% endblock %}
