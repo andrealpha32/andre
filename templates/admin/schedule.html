@@ -1,0 +1,84 @@
+{% extends "admin_dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">Kelola Jadwal Orientasi</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label class="form-label">Hari</label>
+                            <input type="number" name="day" class="form-control" min="1" max="3" required>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label class="form-label">Tanggal</label>
+                            <input type="text" name="date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <label class="form-label">Waktu</label>
+                            <input type="text" name="time" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Kegiatan</label>
+                            <input type="text" name="activity" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="mb-3">
+                            <label class="form-label">Lokasi</label>
+                            <input type="text" name="location" class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Tambah Jadwal</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hari</th>
+                            <th>Tanggal</th>
+                            <th>Waktu</th>
+                            <th>Kegiatan</th>
+                            <th>Lokasi</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in schedules %}
+                        <tr>
+                            <td>{{ schedule.day }}</td>
+                            <td>{{ schedule.date }}</td>
+                            <td>{{ schedule.time }}</td>
+                            <td>{{ schedule.activity }}</td>
+                            <td>{{ schedule.location }}</td>
+                            <td>
+                                <a href="{{ url_for('delete_schedule', id=schedule.id) }}" 
+                                   class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Yakin ingin menghapus?')">
+                                    Hapus
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

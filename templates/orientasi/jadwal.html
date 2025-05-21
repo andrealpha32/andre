@@ -14,41 +14,43 @@
   </div>
 
   <div class="row">
-    {% for hari in range(1, 4) %}
-    <div class="col-md-4 mb-4">
-      <div class="card h-100">
-        <div class="card-header bg-primary bg-opacity-10 py-3">
-          <h5 class="mb-0">
-            <i class="bi bi-calendar2-check text-primary me-2"></i>
-            Hari {{ hari }}
-          </h5>
-          <small class="text-muted">{{ hari + 14 }} Juli 2024</small>
-        </div>
-        <div class="card-body">
-          <div class="timeline">
-            {% for kegiatan in [
-              {'waktu': '07.30 - 08.30', 'acara': 'Upacara Pembukaan', 'tempat': 'Lapangan Utama'},
-              {'waktu': '08.30 - 10.00', 'acara': 'Pengenalan Lingkungan', 'tempat': 'Gedung Sekolah'},
-              {'waktu': '10.00 - 12.00', 'acara': 'Materi Pembelajaran', 'tempat': 'Aula'},
-              {'waktu': '12.00 - 13.00', 'acara': 'ISHOMA', 'tempat': '-'},
-              {'waktu': '13.00 - 15.00', 'acara': 'Ekstrakurikuler', 'tempat': 'Berbagai Lokasi'}
-            ] %}
-            <div class="timeline-item">
-              <div class="timeline-time">{{ kegiatan.waktu }}</div>
-              <div class="timeline-content">
-                <h6 class="mb-1">{{ kegiatan.acara }}</h6>
-                <small class="text-muted">
-                  <i class="bi bi-geo-alt me-1"></i>
-                  {{ kegiatan.tempat }}
-                </small>
-              </div>
-            </div>
-            {% endfor %}
+    {% set current_day = 0 %}
+    {% for schedule in schedules %}
+      {% if schedule.day != current_day %}
+        {% if current_day != 0 %}
           </div>
         </div>
       </div>
-    </div>
+        {% endif %}
+        <div class="col-md-4 mb-4">
+          <div class="card h-100">
+            <div class="card-header bg-primary bg-opacity-10 py-3">
+              <h5 class="mb-0">
+                <i class="bi bi-calendar2-check text-primary me-2"></i>
+                Hari {{ schedule.day }}
+              </h5>
+              <small class="text-muted">{{ schedule.date }}</small>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+        {% set current_day = schedule.day %}
+      {% endif %}
+      <div class="timeline-item">
+        <div class="timeline-time">{{ schedule.time }}</div>
+        <div class="timeline-content">
+          <h6 class="mb-1">{{ schedule.activity }}</h6>
+          <small class="text-muted">
+            <i class="bi bi-geo-alt me-1"></i>
+            {{ schedule.location }}
+          </small>
+        </div>
+      </div>
     {% endfor %}
+    {% if schedules %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 

@@ -6,7 +6,7 @@ import google.generativeai as genai
 import os
 import json
 from functools import lru_cache
-from datetime import timedelta
+from datetime import timedelta, datetime
 from email_validator import validate_email, EmailNotValidError
 
 app = Flask(__name__)
@@ -28,6 +28,8 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
     is_verified = db.Column(db.Boolean, default=False)  # Add this attribute
     formulir = db.relationship('Formulir', back_populates='user')  # Add this relationship
+    posts = db.relationship('ForumPost', backref='author', lazy=True)
+    comments = db.relationship('ForumComment', backref='author', lazy=True)
 
     def __repr__(self):
         return f'<User {self.username}>'
@@ -68,6 +70,52 @@ class Payment(db.Model):
     user = db.relationship('User')
     formulir = db.relationship('Formulir')
 
+class ForumPost(db.Model):
+    __tablename__ = 'forum_posts'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    likes = db.Column(db.Integer, default=0)
+    comments = db.relationship('ForumComment', backref='post', lazy=True, cascade='all, delete-orphan')
+
+class ForumComment(db.Model):
+    __tablename__ = 'forum_comments'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=db.func.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('forum_posts.id'), nullable=False)
+
+class OnlineUser(db.Model):
+    __tablename__ = 'online_users'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User')
+
+class OrientationSchedule(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    day = db.Column(db.Integer)
+    date = db.Column(db.String(100))
+    time = db.Column(db.String(100))
+    activity = db.Column(db.String(200))
+    location = db.Column(db.String(200))
+
+class OrientationMaterial(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200))
+    content = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=db.func.now())
+
+class WhatsAppGroup(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200))
+    jurusan = db.Column(db.String(100))
+    link = db.Column(db.String(500))
+    description = db.Column(db.Text)
+    
 # Configure upload folder
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -94,6 +142,23 @@ def admin_login_required(f):
         return f(*args, **kwargs)
     wrapper.__name__ = f.__name__
     return wrapper
+
+@app.before_request
+def update_last_seen():
+    if 'user_id' in session:
+        # Update or create online status
+        online_user = OnlineUser.query.filter_by(user_id=session['user_id']).first()
+        if online_user:
+            online_user.last_seen = datetime.utcnow()
+        else:
+            online_user = OnlineUser(user_id=session['user_id'])
+            db.session.add(online_user)
+        db.session.commit()
+
+        # Clean up old sessions (older than 5 minutes)
+        five_minutes_ago = datetime.utcnow() - timedelta(minutes=5)
+        OnlineUser.query.filter(OnlineUser.last_seen < five_minutes_ago).delete()
+        db.session.commit()
 
 @app.route('/admin_dashboard', endpoint="admin_dashboard_view")
 @admin_login_required
@@ -157,7 +222,8 @@ def admin_login():
 
 @app.route('/admin_logout')
 def admin_logout():
-    session.pop('admin_logged_in', None)
+    # Clear all session data for admin
+    session.clear()
     flash('Anda telah berhasil logout sebagai admin.')
     return redirect(url_for('admin_login'))
 
@@ -464,6 +530,201 @@ def admin_reject_payment(id):
     db.session.commit()
     return jsonify({'status': 'success'})
 
+@app.route('/admin/schedule', methods=['GET', 'POST'])
+@admin_login_required
+def admin_schedule():
+    if request.method == 'POST':
+        day = request.form.get('day')
+        date = request.form.get('date')
+        time = request.form.get('time')
+        activity = request.form.get('activity')
+        location = request.form.get('location')
+        
+        schedule = OrientationSchedule(
+            day=day,
+            date=date,
+            time=time, 
+            activity=activity,
+            location=location
+        )
+        db.session.add(schedule)
+        db.session.commit()
+        
+        flash('Jadwal berhasil ditambahkan')
+        return redirect(url_for('admin_schedule'))
+        
+    schedules = OrientationSchedule.query.order_by(OrientationSchedule.day, OrientationSchedule.time).all()
+    return render_template('admin/schedule.html', schedules=schedules)
+
+@app.route('/admin/schedule/delete/<int:id>')
+@admin_login_required
+def delete_schedule(id):
+    schedule = OrientationSchedule.query.get_or_404(id)
+    db.session.delete(schedule)
+    db.session.commit()
+    flash('Jadwal berhasil dihapus')
+    return redirect(url_for('admin_schedule'))
+
+@app.route('/admin/materials', methods=['GET', 'POST'])
+@admin_login_required
+def admin_materials():
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        
+        material = OrientationMaterial(title=title, content=content)
+        db.session.add(material)
+        db.session.commit()
+        
+        flash('Materi berhasil ditambahkan')
+        return redirect(url_for('admin_materials'))
+        
+    materials = OrientationMaterial.query.order_by(OrientationMaterial.timestamp.desc()).all()
+    return render_template('admin/materials.html', materials=materials)
+
+@app.route('/admin/materials/delete/<int:id>')
+@admin_login_required
+def delete_material(id):
+    material = OrientationMaterial.query.get_or_404(id)
+    db.session.delete(material)
+    db.session.commit()
+    flash('Materi berhasil dihapus')
+    return redirect(url_for('admin_materials'))
+
+# Admin management routes
+@app.route('/admin/jadwal', methods=['GET', 'POST'])
+@admin_login_required
+def admin_jadwal():
+    jadwal = OrientationSchedule.query.order_by(OrientationSchedule.day, OrientationSchedule.time).all()
+    return render_template('admin/jadwal.html', jadwal=jadwal)
+
+@app.route('/admin/jadwal/add', methods=['POST'])
+@admin_login_required
+def admin_add_jadwal():
+    try:
+        day = int(request.form.get('day'))
+        date = request.form.get('date')
+        time = request.form.get('time')
+        activity = request.form.get('activity')
+        location = request.form.get('location')
+        
+        if not all([day, date, time, activity, location]):
+            flash('Semua field harus diisi', 'error')
+            return redirect(url_for('admin_jadwal'))
+        
+        jadwal = OrientationSchedule(
+            day=day,
+            date=date,
+            time=time,
+            activity=activity,
+            location=location
+        )
+        db.session.add(jadwal)
+        db.session.commit()
+        
+        flash('Jadwal berhasil ditambahkan', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Terjadi kesalahan: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_jadwal'))
+
+@app.route('/admin/jadwal/delete/<int:id>', methods=['POST'])
+@admin_login_required
+def admin_delete_jadwal(id):
+    try:
+        jadwal = OrientationSchedule.query.get_or_404(id)
+        db.session.delete(jadwal)
+        db.session.commit()
+        flash('Jadwal berhasil dihapus', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Terjadi kesalahan: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_jadwal'))
+
+@app.route('/admin/grup')
+@admin_login_required
+def admin_grup():
+    grup = WhatsAppGroup.query.all()
+    return render_template('admin/grup.html', grup=grup)
+
+@app.route('/admin/grup/add', methods=['POST'])
+@admin_login_required
+def admin_add_grup():
+    name = request.form.get('name')
+    jurusan = request.form.get('jurusan')
+    link = request.form.get('link')
+    description = request.form.get('description')
+    
+    grup = WhatsAppGroup(
+        name=name,
+        jurusan=jurusan,
+        link=link,
+        description=description
+    )
+    db.session.add(grup)
+    db.session.commit()
+    
+    flash('Grup berhasil ditambahkan')
+    return redirect(url_for('admin_grup'))
+
+@app.route('/admin/grup/delete/<int:id>', methods=['POST'])
+@admin_login_required
+def admin_delete_grup(id):
+    grup = WhatsAppGroup.query.get_or_404(id)
+    db.session.delete(grup)
+    db.session.commit()
+    flash('Grup berhasil dihapus')
+    return redirect(url_for('admin_grup'))
+
+@app.route('/admin/materi')
+@admin_login_required
+def admin_materi():
+    materi = OrientationMaterial.query.all()
+    return render_template('admin/materi.html', materi=materi)
+
+@app.route('/admin/materi/add', methods=['POST'])
+@admin_login_required
+def admin_add_materi():
+    judul = request.form.get('judul')
+    deskripsi = request.form.get('deskripsi')
+    icon = request.form.get('icon')
+    file = request.files.get('file')
+    
+    file_path = None
+    if file and file.filename:
+        filename = secure_filename(file.filename)
+        file_path = os.path.join('uploads', filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    
+    materi = OrientationMaterial(
+        judul=judul,
+        deskripsi=deskripsi,
+        icon=icon,
+        file_path=file_path
+    )
+    db.session.add(materi)
+    db.session.commit()
+    
+    flash('Materi berhasil ditambahkan')
+    return redirect(url_for('admin_materi'))
+
+@app.route('/admin/materi/delete/<int:id>', methods=['POST'])
+@admin_login_required
+def admin_delete_materi(id):
+    materi = OrientationMaterial.query.get_or_404(id)
+    if materi.file_path:
+        try:
+            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], materi.file_path.split('/')[-1]))
+        except:
+            pass
+    db.session.delete(materi)
+    db.session.commit()
+    flash('Materi berhasil dihapus')
+    return redirect(url_for('admin_materi'))
+
+# Modify existing jadwal_orientasi route
 @app.route('/jadwal-orientasi')
 @login_required
 def jadwal_orientasi():
@@ -471,8 +732,10 @@ def jadwal_orientasi():
     if not formulir or formulir.pembayaran_status != 'approved':
         flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
         return redirect(url_for('index'))
-    return render_template('orientasi/jadwal.html')
+    schedules = OrientationSchedule.query.order_by(OrientationSchedule.day, OrientationSchedule.time).all()
+    return render_template('orientasi/jadwal.html', schedules=schedules)
 
+# Modify existing materi_persiapan route
 @app.route('/materi-persiapan')
 @login_required
 def materi_persiapan():
@@ -480,7 +743,8 @@ def materi_persiapan():
     if not formulir or formulir.pembayaran_status != 'approved':
         flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
         return redirect(url_for('index'))
-    return render_template('orientasi/materi.html')
+    materials = OrientationMaterial.query.order_by(OrientationMaterial.timestamp.desc()).all()
+    return render_template('orientasi/materi.html', materials=materials)
 
 @app.route('/grup-wa')
 @login_required
@@ -498,7 +762,77 @@ def forum_siswa():
     if not formulir or formulir.pembayaran_status != 'approved':
         flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
         return redirect(url_for('index'))
-    return render_template('orientasi/forum.html')
+    
+    user = User.query.get(session['user_id'])
+    # Get online users
+    five_minutes_ago = datetime.utcnow() - timedelta(minutes=5)
+    online_users = User.query.join(OnlineUser).filter(OnlineUser.last_seen >= five_minutes_ago).all()
+    
+    # Convert posts to dictionary for JSON serialization
+    posts = ForumPost.query.order_by(ForumPost.timestamp.desc()).all()
+    posts_data = []
+    for post in posts:
+        # Convert datetime to ISO format string
+        post_dict = {
+            'id': post.id,
+            'title': post.title,
+            'content': post.content,
+            'timestamp': post.timestamp.strftime('%Y-%m-%dT%H:%M:%S'),
+            'likes': post.likes,
+            'author': {'username': post.author.username},
+            'comments': [{
+                'content': c.content,
+                'timestamp': c.timestamp.strftime('%Y-%m-%dT%H:%M:%S'),
+                'author': {'username': c.author.username}
+            } for c in post.comments]
+        }
+        posts_data.append(post_dict)
+    
+    return render_template('orientasi/forum.html', 
+                         posts=posts_data, 
+                         user=user,
+                         online_users=online_users)
+
+@app.route('/forum/post', methods=['POST'])
+@login_required
+def create_post():
+    title = request.form.get('title')
+    content = request.form.get('content')
+    
+    if not title or not content:
+        flash('Judul dan konten harus diisi')
+        return redirect(url_for('forum_siswa'))
+        
+    post = ForumPost(title=title, content=content, user_id=session['user_id'])
+    db.session.add(post)
+    db.session.commit()
+    
+    flash('Post berhasil dibuat')
+    return redirect(url_for('forum_siswa'))
+
+@app.route('/forum/comment/<int:post_id>', methods=['POST'])
+@login_required
+def create_comment(post_id):
+    content = request.form.get('content')
+    
+    if not content:
+        flash('Komentar tidak boleh kosong')
+        return redirect(url_for('forum_siswa'))
+        
+    comment = ForumComment(content=content, user_id=session['user_id'], post_id=post_id)
+    db.session.add(comment)
+    db.session.commit()
+    
+    flash('Komentar berhasil ditambahkan')
+    return redirect(url_for('forum_siswa'))
+
+@app.route('/forum/like/<int:post_id>', methods=['POST'])
+@login_required
+def like_post(post_id):
+    post = ForumPost.query.get_or_404(post_id)
+    post.likes += 1
+    db.session.commit()
+    return jsonify({'likes': post.likes})
 
 if __name__ == '__main__':
     with app.app_context():

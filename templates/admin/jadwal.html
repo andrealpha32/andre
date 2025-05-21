@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Kelola Jadwal{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h3 class="mb-4">Kelola Jadwal Orientasi</h3>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Tambah Jadwal</h5>
+          <form action="{{ url_for('admin_add_jadwal') }}" method="POST">
+            <div class="mb-3">
+              <label class="form-label">Tanggal</label>
+              <input type="date" name="tanggal" class="form-control" required>
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <label class="form-label">Waktu Mulai</label>
+                <input type="time" name="waktu_mulai" class="form-control" required>
+              </div>
+              <div class="col">
+                <label class="form-label">Waktu Selesai</label>
+                <input type="time" name="waktu_selesai" class="form-control" required>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Kegiatan</label>
+              <input type="text" name="kegiatan" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Tempat</label>
+              <input type="text" name="tempat" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Tambah Jadwal</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Waktu</th>
+                  <th>Kegiatan</th>
+                  <th>Tempat</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for j in jadwal %}
+                <tr>
+                  <td>{{ j.tanggal.strftime('%d/%m/%Y') }}</td>
+                  <td>{{ j.waktu_mulai }} - {{ j.waktu_selesai }}</td>
+                  <td>{{ j.kegiatan }}</td>
+                  <td>{{ j.tempat }}</td>
+                  <td>
+                    <form action="{{ url_for('admin_delete_jadwal', id=j.id) }}" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus jadwal ini?')">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

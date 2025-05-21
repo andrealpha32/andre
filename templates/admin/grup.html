@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Kelola Grup WA{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h3 class="mb-4">Kelola Grup WhatsApp</h3>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Tambah Grup</h5>
+          <form action="{{ url_for('admin_add_grup') }}" method="POST">
+            <div class="mb-3">
+              <label class="form-label">Nama Grup</label>
+              <input type="text" name="nama" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Link Grup</label>
+              <input type="url" name="link" class="form-control" required 
+                     placeholder="https://chat.whatsapp.com/...">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Deskripsi</label>
+              <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Jurusan</label>
+              <select name="jurusan" class="form-select" required>
+                <option value="IPA">IPA</option>
+                <option value="IPS">IPS</option>
+                <option value="Bahasa">Bahasa</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Tambah Grup</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Nama Grup</th>
+                  <th>Jurusan</th>
+                  <th>Link</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for g in grup %}
+                <tr>
+                  <td>{{ g.nama }}</td>
+                  <td>{{ g.jurusan }}</td>
+                  <td>
+                    <a href="{{ g.link }}" target="_blank" class="btn btn-success btn-sm">
+                      <i class="bi bi-whatsapp"></i>
+                    </a>
+                  </td>
+                  <td>
+                    <form action="{{ url_for('admin_delete_grup', id=g.id) }}" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus grup ini?')">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

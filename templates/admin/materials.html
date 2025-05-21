@@ -1,0 +1,40 @@
+{% extends "admin_dashboard.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4">Kelola Materi Orientasi</h2>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Judul Materi</label>
+                    <input type="text" name="title" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Konten Materi</label>
+                    <textarea name="content" class="form-control" rows="10" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Tambah Materi</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            {% for material in materials %}
+            <div class="border-bottom mb-4 pb-4">
+                <h4>{{ material.title }}</h4>
+                <p class="text-muted small">{{ material.timestamp.strftime('%d-%m-%Y %H:%M') }}</p>
+                <p>{{ material.content }}</p>
+                <a href="{{ url_for('delete_material', id=material.id) }}" 
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Yakin ingin menghapus?')">
+                    Hapus
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

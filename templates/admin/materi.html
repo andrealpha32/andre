@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Admin - Kelola Materi{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h3 class="mb-4">Kelola Materi Persiapan</h3>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Tambah Materi</h5>
+          <form action="{{ url_for('admin_add_materi') }}" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label class="form-label">Judul</label>
+              <input type="text" name="judul" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Deskripsi</label>
+              <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">File (PDF)</label>
+              <input type="file" name="file" class="form-control" accept=".pdf">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Icon</label>
+              <select name="icon" class="form-select" required>
+                <option value="bi-book">📚 Buku</option>
+                <option value="bi-file-text">📄 Dokumen</option>
+                <option value="bi-pencil">✏️ Tulis</option>
+                <option value="bi-mortarboard">🎓 Wisuda</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Tambah Materi</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Judul</th>
+                  <th>Deskripsi</th>
+                  <th>File</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for m in materi %}
+                <tr>
+                  <td><i class="bi {{ m.icon }} fs-4"></i></td>
+                  <td>{{ m.judul }}</td>
+                  <td>{{ m.deskripsi[:50] }}...</td>
+                  <td>
+                    {% if m.file_path %}
+                    <a href="{{ url_for('uploaded_file', filename=m.file_path.split('/')[-1]) }}" target="_blank">
+                      <i class="bi bi-file-pdf text-danger"></i>
+                    </a>
+                    {% else %}
+                    -
+                    {% endif %}
+                  </td>
+                  <td>
+                    <form action="{{ url_for('admin_delete_materi', id=m.id) }}" method="POST" class="d-inline">
+                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus materi ini?')">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
