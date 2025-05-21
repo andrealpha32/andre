@@ -247,18 +247,39 @@
 
             {% elif session.get('admin_logged_in') %}
             <!-- Menu untuk admin -->
-            <a href="{{ url_for('admin_dashboard_view') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_dashboard_view' }}">
-              <i class="bi bi-speedometer2"></i>
-              <span>Dashboard</span>
-            </a>
-            <a href="{{ url_for('admin_verifikasi_list') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_verifikasi_list' }}">
-              <i class="bi bi-check-circle"></i>
-              <span>Verifikasi Pendaftar</span>
-            </a>
-            <a href="{{ url_for('admin_logout') }}" class="nav-link text-danger">
-              <i class="bi bi-box-arrow-right"></i>
-              <span>Logout Admin</span>
-            </a>
+            <div class="nav-section">
+              <div class="nav-section-title">Admin Panel</div>
+              <div class="nav flex-column">
+                <a href="{{ url_for('admin_dashboard_view') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_dashboard_view' }}">
+                  <i class="bi bi-speedometer2"></i>
+                  <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin_verifikasi_list') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_verifikasi_list' }}">
+                  <i class="bi bi-check-circle"></i>
+                  <span>Verifikasi Pendaftar</span>
+                </a>
+
+                <div class="nav-section-title mt-4">Manajemen Data</div>
+                <a href="{{ url_for('admin_jadwal') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_jadwal' }}">
+                  <i class="bi bi-calendar-week"></i>
+                  <span>Kelola Jadwal</span>
+                </a>
+                <a href="{{ url_for('admin_grup') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_grup' }}">
+                  <i class="bi bi-whatsapp"></i>
+                  <span>Kelola Grup WA</span>
+                </a>
+                <a href="{{ url_for('admin_materi') }}" class="nav-link {{ 'active' if request.endpoint == 'admin_materi' }}">
+                  <i class="bi bi-journal-text"></i>
+                  <span>Kelola Materi</span>
+                </a>
+
+                <div class="nav-section-title mt-4">Pengaturan Admin</div>
+                <a href="{{ url_for('admin_logout') }}" class="nav-link text-danger">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Logout Admin</span>
+                </a>
+              </div>
+            </div>
 
             {% else %}
             <!-- Menu untuk user yang sudah login -->
@@ -334,6 +355,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  {% block scripts %}{% endblock %}
 </body>
-
 </html>

@@ -1,89 +1,22 @@
-<!DOCTYPE html>
-<html>
+{% extends "admin/admin_base.html" %}
 
-<head>
-    <title>Admin - Verifikasi Pengguna</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <style>
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 15px;
-        }
+{% block title %}Admin - Verifikasi Pendaftar{% endblock %}
 
-        .status-badge {
-            font-size: 0.8rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            display: inline-block;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-approved {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .btn {
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            text-decoration: none;
-            color: white;
-            border: none;
-            cursor: pointer;
-            display: inline-block;
-            margin: 2px;
-        }
-
-        .btn-view {
-            background: #007bff;
-        }
-
-        .btn-approve {
-            background: #28a745;
-        }
-
-        .btn-reject {
-            background: #dc3545;
-        }
-
-        .btn-success {
-            background: #28a745;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-        }
-    </style>
-</head>
-
-<body>
-    <div class="layout">
-        <div class="sidebar">
-            <div class="logo">Admin Panel</div>
-            <div class="sidebar-menu">
-                <a href="{{ url_for('admin_dashboard_view') }}">Dashboard</a>
-                <a href="{{ url_for('admin_verifikasi_list') }}">Verifikasi Pengguna</a>
-                <a href="{{ url_for('admin_logout') }}">Logout</a>
-            </div>
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="fw-bold mb-4">
+                <i class="bi bi-check-circle me-2"></i>
+                Verifikasi Pendaftar
+            </h3>
         </div>
+    </div>
 
-        <div class="main-content">
-            <div class="container">
-                <h2>Daftar Verifikasi Pengguna</h2>
-
-                <table id="userTable" class="display" style="width:100%">
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="userTable" class="table">
                     <thead>
                         <tr>
                             <th>Username</th>
@@ -108,51 +41,66 @@
                             <td>{{ user.formulir[0].jurusan }}</td>
                             <td>{{ user.formulir[0].no_hp }}</td>
                             <td>
-                                <span class="status-badge {{ user.formulir[0].verifikasi_status }}-status">
-                                    {% if user.formulir[0].verifikasi_status == 'approved' %}✓
-                                    {% elif user.formulir[0].verifikasi_status == 'rejected' %}✗
-                                    {% else %}⏳{% endif %}
+                                <span class="badge bg-{{ 'success' if user.formulir[0].verifikasi_status == 'approved' 
+                                    else 'warning' if user.formulir[0].verifikasi_status == 'pending' 
+                                    else 'danger' }}">
+                                    {{ user.formulir[0].verifikasi_status|title }}
                                 </span>
                             </td>
                             <td>
-                                <span class="status-badge {{ user.formulir[0].pembayaran_status }}-status">
-                                    {% if user.formulir[0].pembayaran_status == 'approved' %}✓
-                                    {% elif user.formulir[0].pembayaran_status == 'rejected' %}✗
-                                    {% elif user.formulir[0].pembayaran_status == 'pending' %}⏳
-                                    {% else %}-{% endif %}
+                                <span class="badge bg-{{ 'success' if user.formulir[0].pembayaran_status == 'approved' 
+                                    else 'warning' if user.formulir[0].pembayaran_status == 'pending'
+                                    else 'danger' if user.formulir[0].pembayaran_status == 'rejected'
+                                    else 'secondary' }}">
+                                    {{ user.formulir[0].pembayaran_status|title if user.formulir[0].pembayaran_status else 'Belum' }}
                                 </span>
                             </td>
                             <td>
                                 {% if user.formulir[0].foto_path %}
                                 <a href="{{ url_for('uploaded_file', filename=user.formulir[0].foto_path.split('/')[-1]) }}"
-                                    target="_blank" class="btn btn-view">Foto</a>
+                                    target="_blank" class="btn btn-sm btn-outline-primary me-1" title="Lihat Foto">
+                                    <i class="bi bi-image"></i>
+                                </a>
                                 {% endif %}
 
                                 {% if user.formulir[0].ijazah_path %}
                                 <a href="{{ url_for('uploaded_file', filename=user.formulir[0].ijazah_path.split('/')[-1]) }}"
-                                    target="_blank" class="btn btn-view">Ijazah</a>
+                                    target="_blank" class="btn btn-sm btn-outline-primary me-1" title="Lihat Ijazah">
+                                    <i class="bi bi-file-pdf"></i>
+                                </a>
                                 {% endif %}
 
                                 {% if user.formulir[0].pembayaran_path %}
                                 <a href="{{ url_for('uploaded_file', filename=user.formulir[0].pembayaran_path.split('/')[-1]) }}"
-                                    target="_blank" class="btn btn-view">Pembayaran</a>
+                                    target="_blank" class="btn btn-sm btn-outline-primary" title="Lihat Bukti Pembayaran">
+                                    <i class="bi bi-receipt"></i>
+                                </a>
                                 {% endif %}
                             </td>
                             <td>
                                 {% if user.formulir[0].verifikasi_status != 'approved' %}
                                 <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='terima') }}"
-                                    class="btn btn-approve">Terima</a>
+                                    class="btn btn-sm btn-success me-1" title="Terima">
+                                    <i class="bi bi-check-lg"></i>
+                                </a>
                                 {% endif %}
+                                
                                 {% if user.formulir[0].verifikasi_status != 'rejected' %}
                                 <a href="{{ url_for('proses_verifikasi', user_id=user.id, action='tolak') }}"
-                                    class="btn btn-reject">Tolak</a>
+                                    class="btn btn-sm btn-danger me-1" title="Tolak">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
                                 {% endif %}
 
                                 {% if user.formulir[0].verifikasi_status == 'approved' and user.formulir[0].pembayaran_status == 'pending' %}
-                                    <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='terima') }}" 
-                                       class="btn btn-success">Verifikasi Pembayaran</a>
-                                    <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='tolak') }}" 
-                                       class="btn btn-danger">Tolak Pembayaran</a>
+                                <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='terima') }}" 
+                                   class="btn btn-sm btn-outline-success me-1" title="Terima Pembayaran">
+                                    <i class="bi bi-credit-card-check"></i>
+                                </a>
+                                <a href="{{ url_for('verifikasi_pembayaran', user_id=user.id, action='tolak') }}" 
+                                   class="btn btn-sm btn-outline-danger" title="Tolak Pembayaran">
+                                    <i class="bi bi-credit-card-x"></i>
+                                </a>
                                 {% endif %}
                             </td>
                         </tr>
@@ -162,43 +110,38 @@
             </div>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            // Add custom sorting for status column
-            $.fn.dataTable.ext.type.order['status-pre'] = function (data) {
-                if (data.includes('⏳')) return 1;  // Pending status
-                if (data.includes('✓')) return 2;  // Approved status
-                if (data.includes('✗')) return 3;  // Rejected status
-                return 4;  // Other status
-            };
+{% block extra_css %}
+<link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+{% endblock %}
 
-            $('#userTable').DataTable({
-                pageLength: 10,
-                columnDefs: [{
-                    targets: 7, // Status column index
-                    type: 'status'
-                }],
-                order: [[7, 'asc']], // Sort by status column by default
-                language: {
-                    search: "Cari:",
-                    lengthMenu: "Tampilkan _MENU_ data per halaman",
-                    zeroRecords: "Tidak ada data yang ditemukan",
-                    info: "Menampilkan halaman _PAGE_ dari _PAGES_",
-                    infoEmpty: "Tidak ada data yang tersedia",
-                    infoFiltered: "(difilter dari _MAX_ total data)",
-                    paginate: {
-                        first: "Pertama",
-                        last: "Terakhir",
-                        next: "Selanjutnya",
-                        previous: "Sebelumnya"
-                    }
+{% block scripts %}
+{{ super() }}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#userTable').DataTable({
+            pageLength: 10,
+            order: [[6, 'asc']],
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data per halaman",
+                zeroRecords: "Tidak ada data yang ditemukan",
+                info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                infoEmpty: "Tidak ada data yang tersedia",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir", 
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
                 }
-            });
+            }
         });
-    </script>
-</body>
-
-</html>
+    });
+</script>
+{% endblock %}

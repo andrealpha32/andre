@@ -1,88 +1,168 @@
-{% extends "base.html" %}
+{% extends "admin/admin_base.html" %}
 
 {% block title %}Admin - Kelola Materi{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-  <h3 class="mb-4">Kelola Materi Persiapan</h3>
-
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Tambah Materi</h5>
-          <form action="{{ url_for('admin_add_materi') }}" method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-              <label class="form-label">Judul</label>
-              <input type="text" name="judul" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Deskripsi</label>
-              <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">File (PDF)</label>
-              <input type="file" name="file" class="form-control" accept=".pdf">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Icon</label>
-              <select name="icon" class="form-select" required>
-                <option value="bi-book">📚 Buku</option>
-                <option value="bi-file-text">📄 Dokumen</option>
-                <option value="bi-pencil">✏️ Tulis</option>
-                <option value="bi-mortarboard">🎓 Wisuda</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Tambah Materi</button>
-          </form>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="fw-bold mb-4">
+                <i class="bi bi-journal-text text-primary me-2"></i>
+                Kelola Materi
+            </h3>
         </div>
-      </div>
     </div>
 
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Icon</th>
-                  <th>Judul</th>
-                  <th>Deskripsi</th>
-                  <th>File</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for m in materi %}
-                <tr>
-                  <td><i class="bi {{ m.icon }} fs-4"></i></td>
-                  <td>{{ m.judul }}</td>
-                  <td>{{ m.deskripsi[:50] }}...</td>
-                  <td>
-                    {% if m.file_path %}
-                    <a href="{{ url_for('uploaded_file', filename=m.file_path.split('/')[-1]) }}" target="_blank">
-                      <i class="bi bi-file-pdf text-danger"></i>
-                    </a>
-                    {% else %}
-                    -
-                    {% endif %}
-                  </td>
-                  <td>
-                    <form action="{{ url_for('admin_delete_materi', id=m.id) }}" method="POST" class="d-inline">
-                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus materi ini?')">
-                        <i class="bi bi-trash"></i>
-                      </button>
+    <!-- Form Tambah Materi -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Tambah Materi Baru
+                    </h5>
+                    <form method="POST" action="{{ url_for('admin_add_materi') }}" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Judul Materi</label>
+                                    <input type="text" class="form-control" name="judul" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Icon</label>
+                                    <select class="form-control" name="icon" required>
+                                        <option value="bi-book">📚 Buku</option>
+                                        <option value="bi-file-text">📄 Dokumen</option>
+                                        <option value="bi-play-circle">▶️ Video</option>
+                                        <option value="bi-link">🔗 Link</option>
+                                        <option value="bi-clipboard-check">✅ Tugas</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Deskripsi</label>
+                                    <textarea class="form-control" name="deskripsi" rows="3" required></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">File Materi (PDF)</label>
+                                    <input type="file" class="form-control" name="file" accept=".pdf">
+                                    <small class="text-muted">Opsional, maksimal 2MB</small>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-2"></i>Tambah Materi
+                                </button>
+                            </div>
+                        </div>
                     </form>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+
+    <!-- Daftar Materi -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-4">
+                <i class="bi bi-list-check me-2"></i>
+                Daftar Materi
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-hover" id="materiTable">
+                    <thead>
+                        <tr>
+                            <th>Judul</th>
+                            <th width="50">Icon</th>
+                            <th>Deskripsi</th>
+                            <th>File</th>
+                            <th width="100">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in materi %}
+                        <tr>
+                            <td>{{ m.judul }}</td>
+                            <td><i class="bi {{ m.icon }} fs-4"></i></td>
+                            <td>{{ m.deskripsi }}</td>
+                            <td>
+                                {% if m.file_path %}
+                                <a href="{{ url_for('uploaded_file', filename=m.file_path.split('/')[-1]) }}" 
+                                   class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="bi bi-download me-1"></i> Download
+                                </a>
+                                {% else %}
+                                <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <form action="{{ url_for('admin_delete_materi', id=m.id) }}" 
+                                      method="POST" class="d-inline" 
+                                      onsubmit="return confirm('Yakin ingin menghapus materi ini?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<style>
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.table > :not(caption) > * > * {
+    padding: 1rem;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#materiTable').DataTable({
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data per halaman",
+                zeroRecords: "Tidak ada data yang ditemukan",
+                info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                infoEmpty: "Tidak ada data yang tersedia",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

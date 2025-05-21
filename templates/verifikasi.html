@@ -12,137 +12,197 @@
   {% block title %}Form Pendaftaran{% endblock %}
 
   {% block content %}
-  <div class="container">
+  <div class="container-fluid">
     <div class="row mb-4">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="mb-3">Status Verifikasi</h5>
-            {% if formulir %}
-            <div class="d-flex justify-content-between position-relative mb-4">
-              <div class="progress" style="height: 3px; width: 100%; position: absolute; top: 50%; transform: translateY(-50%);">
-                <div class="progress-bar {% if formulir.verifikasi_status != '' %}bg-success{% endif %}" style="width: {{ progress }}%;"></div>
-              </div>
-              
-              <div class="position-relative">
-                <div class="rounded-circle bg-{{ 'success' if formulir.verifikasi_status != '' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">1</div>
-                <div class="small mt-2">Pengisian Form</div>
-              </div>
-              
-              <div class="position-relative">
-                <div class="rounded-circle bg-{{ 'success' if formulir.verifikasi_status == 'pending' or formulir.verifikasi_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">2</div>
-                <div class="small mt-2">Verifikasi</div>
-              </div>
-              
-              <div class="position-relative">
-                <div class="rounded-circle bg-{{ 'success' if formulir.verifikasi_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">3</div>
-                <div class="small mt-2">Pembayaran</div>
-              </div>
-              
-              <div class="position-relative">
-                <div class="rounded-circle bg-{{ 'success' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">4</div>
-                <div class="small mt-2">Selesai</div>
-              </div>
-            </div>
-            <div class="small mt-2 text-muted">
-              {% if formulir.verifikasi_status == 'approved' %}
-                Selamat! Pendaftaran Anda telah disetujui
-              {% elif formulir.verifikasi_status == 'pending' %}
-                Menunggu verifikasi admin
-              {% elif formulir.verifikasi_status == 'rejected' %}
-                Pendaftaran ditolak, silahkan periksa kembali dokumen Anda
-              {% else %}
-                Silahkan lengkapi formulir pendaftaran
-              {% endif %}
-            </div>
-            {% else %}
-            <div class="progress" style="height: 25px;">
-              <div class="progress-bar bg-secondary" style="width: 25%">
-                Belum Mengisi
-              </div>
-            </div>
-            {% endif %}
-          </div>
+        <div class="col-12">
+            <h3 class="fw-bold mb-4">
+                <i class="bi bi-file-earmark-text text-primary me-2"></i>
+                Form Pendaftaran
+            </h3>
         </div>
-      </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">Status Verifikasi</h5>
+                    {% if formulir %}
+                    <div class="d-flex justify-content-between position-relative mb-4">
+                        <div class="progress" style="height: 3px; width: 100%; position: absolute; top: 50%; transform: translateY(-50%);">
+                            <div class="progress-bar {% if formulir.verifikasi_status != '' %}bg-primary{% endif %}" style="width: {{ progress }}%;"></div>
+                        </div>
+                        
+                        <div class="position-relative">
+                            <div class="rounded-circle bg-{{ 'primary' if formulir.verifikasi_status != '' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">1</div>
+                            <div class="small mt-2">Pengisian Form</div>
+                        </div>
+                        
+                        <div class="position-relative">
+                            <div class="rounded-circle bg-{{ 'primary' if formulir.verifikasi_status == 'pending' or formulir.verifikasi_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">2</div>
+                            <div class="small mt-2">Verifikasi</div>
+                        </div>
+                        
+                        <div class="position-relative">
+                            <div class="rounded-circle bg-{{ 'primary' if formulir.verifikasi_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">3</div>
+                            <div class="small mt-2">Pembayaran</div>
+                        </div>
+                        
+                        <div class="position-relative">
+                            <div class="rounded-circle bg-{{ 'primary' if formulir.verifikasi_status == 'approved' and formulir.pembayaran_status == 'approved' else 'secondary' }} text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">4</div>
+                            <div class="small mt-2">Selesai</div>
+                        </div>
+                    </div>
+                    <div class="alert alert-{{ 'success' if formulir.verifikasi_status == 'approved' else 'warning' if formulir.verifikasi_status == 'pending' else 'danger' if formulir.verifikasi_status == 'rejected' else 'info' }} mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        {% if formulir.verifikasi_status == 'approved' %}
+                            Selamat! Pendaftaran Anda telah disetujui
+                        {% elif formulir.verifikasi_status == 'pending' %}
+                            Menunggu verifikasi admin
+                        {% elif formulir.verifikasi_status == 'rejected' %}
+                            Pendaftaran ditolak, silahkan periksa kembali dokumen Anda
+                        {% else %}
+                            Silahkan lengkapi formulir pendaftaran
+                        {% endif %}
+                    </div>
+                    {% else %}
+                    <div class="progress" style="height: 25px;">
+                        <div class="progress-bar bg-secondary" style="width: 25%">
+                            Belum Mengisi
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
-      <div class="col-12">
-        <h2 class="mb-4">Formulir Pendaftaran</h2>
-        <div class="card">
-          <div class="card-body">
-            <form method="POST" enctype="multipart/form-data">
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Nama Lengkap</label>
-                  <input class="form-control" name="nama_lengkap" required
-                    value="{{ formulir.nama_lengkap if formulir }}">
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Tempat Lahir</label>
-                  <input class="form-control" name="tempat_lahir" required
-                    value="{{ formulir.tempat_lahir if formulir }}">
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Tanggal Lahir</label>
-                  <input type="date" class="form-control" name="tanggal_lahir" required
-                    value="{{ formulir.tanggal_lahir if formulir }}">
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Jenis Kelamin</label>
-                  <select class="form-control" name="jenis_kelamin" required>
-                    <option value="">Pilih Jenis Kelamin</option>
-                    <option value="Laki-laki"
-                      {% if formulir.jenis_kelamin == 'Laki-laki' %}selected{% endif %}>Laki-laki</option>
-                    <option value="Perempuan"
-                      {% if formulir.jenis_kelamin == 'Perempuan' %}selected{% endif %}>Perempuan</option>
-                  </select>
-                </div>
-                <div class="col-12 mb-3">
-                  <label class="form-label">Alamat Lengkap</label>
-                  <textarea class="form-control" name="alamat" required>{{ formulir.alamat if formulir }}</textarea>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Asal Sekolah</label>
-                  <input class="form-control" name="asal_sekolah" required
-                    value="{{ formulir.asal_sekolah if formulir }}">
-                </div>
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-person-vcard me-2"></i>
+                        Data Pendaftaran
+                    </h5>
+                    <form method="POST" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nama Lengkap</label>
+                                <input class="form-control" name="nama_lengkap" required
+                                    value="{{ formulir.nama_lengkap if formulir }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tempat Lahir</label>
+                                <input class="form-control" name="tempat_lahir" required
+                                    value="{{ formulir.tempat_lahir if formulir }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tanggal Lahir</label>
+                                <input type="date" class="form-control" name="tanggal_lahir" required
+                                    value="{{ formulir.tanggal_lahir if formulir }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Jenis Kelamin</label>
+                                <select class="form-control" name="jenis_kelamin" required>
+                                    <option value="">Pilih Jenis Kelamin</option>
+                                    <option value="Laki-laki" {% if formulir.jenis_kelamin == 'Laki-laki' %}selected{% endif %}>Laki-laki</option>
+                                    <option value="Perempuan" {% if formulir.jenis_kelamin == 'Perempuan' %}selected{% endif %}>Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <label class="form-label">Alamat Lengkap</label>
+                                <textarea class="form-control" name="alamat" required rows="3">{{ formulir.alamat if formulir }}</textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Asal Sekolah</label>
+                                <input class="form-control" name="asal_sekolah" required
+                                    value="{{ formulir.asal_sekolah if formulir }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">No. HP</label>
+                                <input class="form-control" name="no_hp" type="tel" required 
+                                    value="{{ formulir.no_hp if formulir }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Jurusan yang Dipilih</label>
+                                <select class="form-control" name="jurusan" required>
+                                    <option value="">Pilih Jurusan</option>
+                                    <option value="IPA" {% if formulir.jurusan == 'IPA' %}selected{% endif %}>IPA</option>
+                                    <option value="IPS" {% if formulir.jurusan == 'IPS' %}selected{% endif %}>IPS</option>
+                                    <option value="Bahasa" {% if formulir.jurusan == 'Bahasa' %}selected{% endif %}>Bahasa</option>
+                                </select>
+                            </div>
+                        </div>
 
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">No. HP</label>
-                  <input class="form-control" name="no_hp" type="tel" required 
-                    value="{{ formulir.no_hp if formulir }}">
+                        <h5 class="card-title mt-4 mb-4">
+                            <i class="bi bi-file-earmark-arrow-up me-2"></i>
+                            Upload Dokumen
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Foto Diri</label>
+                                <input type="file" class="form-control" name="foto" {% if not formulir %}required{% endif %}>
+                                <small class="text-muted">Format: JPG/PNG, Ukuran maks. 2MB</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ijazah</label>
+                                <input type="file" class="form-control" name="ijazah" {% if not formulir %}required{% endif %}>
+                                <small class="text-muted">Format: PDF, Ukuran maks. 2MB</small>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send me-2"></i>
+                                {{ 'Update Formulir' if formulir else 'Kirim Formulir' }}
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Jurusan yang Dipilih</label>
-                  <select class="form-control" name="jurusan" required>
-                    <option value="">Pilih Jurusan</option>
-                    <option value="IPA" {% if formulir.jurusan == 'IPA' %}selected{% endif %}>IPA</option>
-                    <option value="IPS" {% if formulir.jurusan == 'IPS' %}selected{% endif %}>IPS</option>
-                    <option value="Bahasa" {% if formulir.jurusan == 'Bahasa' %}selected{% endif %}>Bahasa</option>
-                  </select>
-                </div>
-
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Foto Diri</label>
-                  <input type="file" class="form-control" name="foto" required>
-                </div>
-                <div class="col-md-6 mb-3">
-                  <label class="form-label">Ijazah</label>
-                  <input type="file" class="form-control" name="ijazah" required>
-                </div>
-              </div>
-              <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Kirim Formulir</button>
-              </div>
-            </form>
-          </div>
+            </div>
         </div>
-      </div>
     </div>
   </div>
+
+  <style>
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.form-label {
+    font-weight: 500;
+    color: #475569;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.btn-primary {
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+}
+
+.progress {
+    border-radius: 999px;
+    overflow: hidden;
+}
+</style>
   {% endblock %}
 </body>
 

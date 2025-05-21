@@ -1,82 +1,165 @@
-{% extends "base.html" %}
+{% extends "admin/admin_base.html" %}
 
-{% block title %}Admin - Kelola Grup WA{% endblock %}
+{% block title %}Admin - Kelola Grup WhatsApp{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
-  <h3 class="mb-4">Kelola Grup WhatsApp</h3>
-
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Tambah Grup</h5>
-          <form action="{{ url_for('admin_add_grup') }}" method="POST">
-            <div class="mb-3">
-              <label class="form-label">Nama Grup</label>
-              <input type="text" name="nama" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Link Grup</label>
-              <input type="url" name="link" class="form-control" required 
-                     placeholder="https://chat.whatsapp.com/...">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Deskripsi</label>
-              <textarea name="deskripsi" class="form-control" rows="3" required></textarea>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Jurusan</label>
-              <select name="jurusan" class="form-select" required>
-                <option value="IPA">IPA</option>
-                <option value="IPS">IPS</option>
-                <option value="Bahasa">Bahasa</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Tambah Grup</button>
-          </form>
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="fw-bold mb-4">
+                <i class="bi bi-whatsapp text-primary me-2"></i>
+                Kelola Grup WhatsApp
+            </h3>
         </div>
-      </div>
     </div>
 
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-body">
-          <div class="table-responsive">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Nama Grup</th>
-                  <th>Jurusan</th>
-                  <th>Link</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for g in grup %}
-                <tr>
-                  <td>{{ g.nama }}</td>
-                  <td>{{ g.jurusan }}</td>
-                  <td>
-                    <a href="{{ g.link }}" target="_blank" class="btn btn-success btn-sm">
-                      <i class="bi bi-whatsapp"></i>
-                    </a>
-                  </td>
-                  <td>
-                    <form action="{{ url_for('admin_delete_grup', id=g.id) }}" method="POST" class="d-inline">
-                      <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Hapus grup ini?')">
-                        <i class="bi bi-trash"></i>
-                      </button>
+    <!-- Form Tambah Grup -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Tambah Grup Baru
+                    </h5>
+                    <form method="POST" action="{{ url_for('admin_add_grup') }}">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Nama Grup</label>
+                                    <input type="text" class="form-control" name="nama_grup" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Link Grup</label>
+                                    <input type="url" class="form-control" name="link_grup" required 
+                                           placeholder="https://chat.whatsapp.com/...">
+                                    <small class="text-muted">Masukkan link invite grup WhatsApp</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Jurusan</label>
+                                    <select class="form-control" name="jurusan" required>
+                                        <option value="">Pilih Jurusan</option>
+                                        <option value="IPA">IPA</option>
+                                        <option value="IPS">IPS</option>
+                                        <option value="Bahasa">Bahasa</option>
+                                        <option value="Umum">Umum (Semua Jurusan)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Deskripsi</label>
+                                    <textarea class="form-control" name="deskripsi" rows="3" required
+                                              placeholder="Contoh: Grup khusus siswa jurusan IPA untuk informasi orientasi"></textarea>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-plus-circle me-2"></i>Tambah Grup
+                                </button>
+                            </div>
+                        </div>
                     </form>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+
+    <!-- Daftar Grup -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title mb-4">
+                <i class="bi bi-list-check me-2"></i>
+                Daftar Grup WhatsApp
+            </h5>
+            <div class="table-responsive">
+                <table class="table table-hover" id="grupTable">
+                    <thead>
+                        <tr>
+                            <th>Nama Grup</th>
+                            <th>Jurusan</th>
+                            <th>Deskripsi</th>
+                            <th>Link</th>
+                            <th width="100">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for g in grup %}
+                        <tr>
+                            <td>{{ g.nama_grup }}</td>
+                            <td>{{ g.jurusan }}</td>
+                            <td>{{ g.deskripsi }}</td>
+                            <td>
+                                <a href="{{ g.link_grup }}" class="btn btn-sm btn-success" target="_blank">
+                                    <i class="bi bi-whatsapp me-1"></i>Join
+                                </a>
+                            </td>
+                            <td>
+                                <form action="{{ url_for('admin_delete_grup', id=g.id) }}" 
+                                      method="POST" class="d-inline"
+                                      onsubmit="return confirm('Yakin ingin menghapus grup ini?')">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<style>
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.table > :not(caption) > * > * {
+    padding: 1rem;
+}
+
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#grupTable').DataTable({
+            language: {
+                search: "Cari:",
+                lengthMenu: "Tampilkan _MENU_ data per halaman",
+                zeroRecords: "Tidak ada data yang ditemukan",
+                info: "Menampilkan halaman _PAGE_ dari _PAGES_",
+                infoEmpty: "Tidak ada data yang tersedia",
+                infoFiltered: "(difilter dari _MAX_ total data)",
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir", 
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

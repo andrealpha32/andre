@@ -105,16 +105,18 @@ class OrientationSchedule(db.Model):
 
 class OrientationMaterial(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200))
-    content = db.Column(db.Text)
+    judul = db.Column(db.String(200), nullable=False)
+    deskripsi = db.Column(db.Text, nullable=False)
+    icon = db.Column(db.String(50), nullable=False)
+    file_path = db.Column(db.String(200))
     timestamp = db.Column(db.DateTime, default=db.func.now())
 
 class WhatsAppGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200))
-    jurusan = db.Column(db.String(100))
-    link = db.Column(db.String(500))
-    description = db.Column(db.Text)
+    nama_grup = db.Column(db.String(200), nullable=False)
+    jurusan = db.Column(db.String(100), nullable=False)
+    link_grup = db.Column(db.String(500), nullable=False)
+    deskripsi = db.Column(db.Text, nullable=False)
     
 # Configure upload folder
 UPLOAD_FOLDER = 'static/uploads'
@@ -565,31 +567,64 @@ def delete_schedule(id):
     flash('Jadwal berhasil dihapus')
     return redirect(url_for('admin_schedule'))
 
-@app.route('/admin/materials', methods=['GET', 'POST'])
+@app.route('/admin/materi', methods=['GET'])
 @admin_login_required
-def admin_materials():
-    if request.method == 'POST':
-        title = request.form.get('title')
-        content = request.form.get('content')
-        
-        material = OrientationMaterial(title=title, content=content)
-        db.session.add(material)
-        db.session.commit()
-        
-        flash('Materi berhasil ditambahkan')
-        return redirect(url_for('admin_materials'))
-        
-    materials = OrientationMaterial.query.order_by(OrientationMaterial.timestamp.desc()).all()
-    return render_template('admin/materials.html', materials=materials)
+def admin_materi():
+    materi = OrientationMaterial.query.all()
+    return render_template('admin/materi.html', materi=materi)
 
-@app.route('/admin/materials/delete/<int:id>')
+@app.route('/admin/materi/add', methods=['POST'])
 @admin_login_required
-def delete_material(id):
-    material = OrientationMaterial.query.get_or_404(id)
-    db.session.delete(material)
+def admin_add_materi():
+    judul = request.form.get('judul')
+    deskripsi = request.form.get('deskripsi')
+    icon = request.form.get('icon')
+    file = request.files.get('file')
+    
+    if not all([judul, deskripsi, icon]):
+        flash('Semua field harus diisi', 'error')
+        return redirect(url_for('admin_materi'))
+    
+    file_path = None
+    if file and file.filename:
+        filename = secure_filename(file.filename)
+        if filename.lower().endswith('.pdf'):
+            file_path = os.path.join('uploads', filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        else:
+            flash('File harus berformat PDF', 'error')
+            return redirect(url_for('admin_materi'))
+    
+    materi = OrientationMaterial(
+        judul=judul,
+        deskripsi=deskripsi,
+        icon=icon,
+        file_path=file_path
+    )
+    db.session.add(materi)
     db.session.commit()
-    flash('Materi berhasil dihapus')
-    return redirect(url_for('admin_materials'))
+    
+    flash('Materi berhasil ditambahkan', 'success')
+    return redirect(url_for('admin_materi'))
+
+@app.route('/admin/materi/delete/<int:id>', methods=['POST'])
+@admin_login_required
+def admin_delete_materi(id):
+    try:
+        materi = OrientationMaterial.query.get_or_404(id)
+        if materi.file_path:
+            try:
+                os.remove(os.path.join(app.config['UPLOAD_FOLDER'], materi.file_path.split('/')[-1]))
+            except:
+                pass
+        db.session.delete(materi)
+        db.session.commit()
+        flash('Materi berhasil dihapus', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Terjadi kesalahan: {str(e)}', 'error')
+    
+    return redirect(url_for('admin_materi'))
 
 # Admin management routes
 @app.route('/admin/jadwal', methods=['GET', 'POST'])
@@ -643,7 +678,7 @@ def admin_delete_jadwal(id):
     
     return redirect(url_for('admin_jadwal'))
 
-@app.route('/admin/grup')
+@app.route('/admin/grup', methods=['GET'])
 @admin_login_required
 def admin_grup():
     grup = WhatsAppGroup.query.all()
@@ -652,99 +687,45 @@ def admin_grup():
 @app.route('/admin/grup/add', methods=['POST'])
 @admin_login_required
 def admin_add_grup():
-    name = request.form.get('name')
-    jurusan = request.form.get('jurusan')
-    link = request.form.get('link')
-    description = request.form.get('description')
+    try:
+        nama_grup = request.form.get('nama_grup')
+        jurusan = request.form.get('jurusan')
+        link_grup = request.form.get('link_grup')
+        deskripsi = request.form.get('deskripsi')
+        
+        if not all([nama_grup, jurusan, link_grup, deskripsi]):
+            flash('Semua field harus diisi', 'error')
+            return redirect(url_for('admin_grup'))
+            
+        grup = WhatsAppGroup(
+            nama_grup=nama_grup,
+            jurusan=jurusan, 
+            link_grup=link_grup,
+            deskripsi=deskripsi
+        )
+        db.session.add(grup)
+        db.session.commit()
+        
+        flash('Grup WhatsApp berhasil ditambahkan', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Terjadi kesalahan: {str(e)}', 'error')
     
-    grup = WhatsAppGroup(
-        name=name,
-        jurusan=jurusan,
-        link=link,
-        description=description
-    )
-    db.session.add(grup)
-    db.session.commit()
-    
-    flash('Grup berhasil ditambahkan')
     return redirect(url_for('admin_grup'))
 
 @app.route('/admin/grup/delete/<int:id>', methods=['POST'])
 @admin_login_required
 def admin_delete_grup(id):
-    grup = WhatsAppGroup.query.get_or_404(id)
-    db.session.delete(grup)
-    db.session.commit()
-    flash('Grup berhasil dihapus')
+    try:
+        grup = WhatsAppGroup.query.get_or_404(id)
+        db.session.delete(grup)
+        db.session.commit()
+        flash('Grup WhatsApp berhasil dihapus', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Terjadi kesalahan: {str(e)}', 'error')
+    
     return redirect(url_for('admin_grup'))
-
-@app.route('/admin/materi')
-@admin_login_required
-def admin_materi():
-    materi = OrientationMaterial.query.all()
-    return render_template('admin/materi.html', materi=materi)
-
-@app.route('/admin/materi/add', methods=['POST'])
-@admin_login_required
-def admin_add_materi():
-    judul = request.form.get('judul')
-    deskripsi = request.form.get('deskripsi')
-    icon = request.form.get('icon')
-    file = request.files.get('file')
-    
-    file_path = None
-    if file and file.filename:
-        filename = secure_filename(file.filename)
-        file_path = os.path.join('uploads', filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    
-    materi = OrientationMaterial(
-        judul=judul,
-        deskripsi=deskripsi,
-        icon=icon,
-        file_path=file_path
-    )
-    db.session.add(materi)
-    db.session.commit()
-    
-    flash('Materi berhasil ditambahkan')
-    return redirect(url_for('admin_materi'))
-
-@app.route('/admin/materi/delete/<int:id>', methods=['POST'])
-@admin_login_required
-def admin_delete_materi(id):
-    materi = OrientationMaterial.query.get_or_404(id)
-    if materi.file_path:
-        try:
-            os.remove(os.path.join(app.config['UPLOAD_FOLDER'], materi.file_path.split('/')[-1]))
-        except:
-            pass
-    db.session.delete(materi)
-    db.session.commit()
-    flash('Materi berhasil dihapus')
-    return redirect(url_for('admin_materi'))
-
-# Modify existing jadwal_orientasi route
-@app.route('/jadwal-orientasi')
-@login_required
-def jadwal_orientasi():
-    formulir = Formulir.query.filter_by(user_id=session['user_id']).first()
-    if not formulir or formulir.pembayaran_status != 'approved':
-        flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
-        return redirect(url_for('index'))
-    schedules = OrientationSchedule.query.order_by(OrientationSchedule.day, OrientationSchedule.time).all()
-    return render_template('orientasi/jadwal.html', schedules=schedules)
-
-# Modify existing materi_persiapan route
-@app.route('/materi-persiapan')
-@login_required
-def materi_persiapan():
-    formulir = Formulir.query.filter_by(user_id=session['user_id']).first()
-    if not formulir or formulir.pembayaran_status != 'approved':
-        flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
-        return redirect(url_for('index'))
-    materials = OrientationMaterial.query.order_by(OrientationMaterial.timestamp.desc()).all()
-    return render_template('orientasi/materi.html', materials=materials)
 
 @app.route('/grup-wa')
 @login_required
@@ -753,7 +734,9 @@ def grup_wa():
     if not formulir or formulir.pembayaran_status != 'approved':
         flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
         return redirect(url_for('index'))
-    return render_template('orientasi/grup.html')
+    
+    grup = WhatsAppGroup.query.all()
+    return render_template('orientasi/grup.html', grup=grup, formulir=formulir)
 
 @app.route('/forum-siswa')
 @login_required
@@ -833,6 +816,28 @@ def like_post(post_id):
     post.likes += 1
     db.session.commit()
     return jsonify({'likes': post.likes})
+
+@app.route('/jadwal-orientasi')
+@login_required
+def jadwal_orientasi():
+    formulir = Formulir.query.filter_by(user_id=session['user_id']).first()
+    if not formulir or formulir.pembayaran_status != 'approved':
+        flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
+        return redirect(url_for('index'))
+    
+    schedules = OrientationSchedule.query.order_by(OrientationSchedule.day, OrientationSchedule.time).all()
+    return render_template('orientasi/jadwal.html', schedules=schedules)
+
+@app.route('/materi-persiapan')
+@login_required
+def materi_persiapan():
+    formulir = Formulir.query.filter_by(user_id=session['user_id']).first()
+    if not formulir or formulir.pembayaran_status != 'approved':
+        flash('Anda harus menyelesaikan pembayaran terlebih dahulu')
+        return redirect(url_for('index'))
+    
+    materi = OrientationMaterial.query.all()
+    return render_template('orientasi/materi.html', materi=materi)
 
 if __name__ == '__main__':
     with app.app_context():

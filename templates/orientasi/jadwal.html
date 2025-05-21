@@ -14,43 +14,33 @@
   </div>
 
   <div class="row">
-    {% set current_day = 0 %}
     {% for schedule in schedules %}
-      {% if schedule.day != current_day %}
-        {% if current_day != 0 %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100">
+        <div class="card-header bg-primary bg-opacity-10 py-3">
+          <h5 class="mb-0">
+            <i class="bi bi-calendar2-check text-primary me-2"></i>
+            Hari {{ schedule.day }}
+          </h5>
+          <small class="text-muted">{{ schedule.date }}</small>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-time">{{ schedule.time }}</div>
+              <div class="timeline-content">
+                <h6 class="mb-1">{{ schedule.activity }}</h6>
+                <small class="text-muted">
+                  <i class="bi bi-geo-alt me-1"></i>
+                  {{ schedule.location }}
+                </small>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-        {% endif %}
-        <div class="col-md-4 mb-4">
-          <div class="card h-100">
-            <div class="card-header bg-primary bg-opacity-10 py-3">
-              <h5 class="mb-0">
-                <i class="bi bi-calendar2-check text-primary me-2"></i>
-                Hari {{ schedule.day }}
-              </h5>
-              <small class="text-muted">{{ schedule.date }}</small>
-            </div>
-            <div class="card-body">
-              <div class="timeline">
-        {% set current_day = schedule.day %}
-      {% endif %}
-      <div class="timeline-item">
-        <div class="timeline-time">{{ schedule.time }}</div>
-        <div class="timeline-content">
-          <h6 class="mb-1">{{ schedule.activity }}</h6>
-          <small class="text-muted">
-            <i class="bi bi-geo-alt me-1"></i>
-            {{ schedule.location }}
-          </small>
-        </div>
-      </div>
-    {% endfor %}
-    {% if schedules %}
-        </div>
-      </div>
     </div>
-    {% endif %}
+    {% endfor %}
   </div>
 </div>
 
@@ -62,33 +52,32 @@
 
 .timeline-item {
   padding: 15px 0;
-  border-left: 2px solid #e9ecef;
+  border-left: 2px solid #e2e8f0;
   padding-left: 20px;
   position: relative;
 }
 
-.timeline-item:before {
+.timeline-item::before {
   content: '';
-  width: 12px;
-  height: 12px;
-  background: var(--primary-color);
-  border-radius: 50%;
   position: absolute;
-  left: -7px;
+  left: -6px;
   top: 20px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bs-primary);
 }
 
 .timeline-time {
-  font-size: 0.875rem;
-  color: var(--primary-color);
-  font-weight: 500;
-  margin-bottom: 5px;
+  font-weight: 600;
+  color: var(--bs-primary);
+  margin-bottom: 0.5rem;
 }
 
 .timeline-content {
-  background: #f8f9fa;
-  padding: 10px 15px;
-  border-radius: 8px;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.5rem;
 }
 </style>
 {% endblock %}
