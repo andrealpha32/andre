@@ -53,7 +53,7 @@ Sistem Penerimaan Peserta Didik Baru (PPDB) Online adalah aplikasi web yang memu
 *Halaman verifikasi data pendaftar*
 
 ### Dashboard Siswa
-![Dashboard Siswa](Screenshots/dashboard%20siswa.png)
+![Dashboard Siswa](static/Screenshots/dashboard siswa.png)
 *Dashboard untuk siswa memantau status pendaftaran*
 
 ### Pembayaran
@@ -170,3 +170,54 @@ Untuk berkontribusi pada proyek ini:
 Untuk informasi lebih lanjut, hubungi:
 - Email: [email@domain.com]
 - WhatsApp: [nomor-whatsapp]
+
+## Changelog
+
+### [v1.0.0] - 2024-05-22
+#### Added
+- Sistem registrasi dan login untuk siswa dan admin
+- Form pendaftaran online dengan upload dokumen
+- Verifikasi pendaftaran oleh admin
+- Sistem pembayaran dan upload bukti bayar
+- Dashboard siswa dengan tracking progress
+- Dashboard admin untuk manajemen data
+- Forum diskusi untuk siswa baru
+- Integrasi grup WhatsApp per jurusan
+- Materi persiapan sekolah digital
+- Jadwal orientasi siswa interaktif
+- Kartu siswa digital dengan QR Code
+- Sistem notifikasi status pendaftaran
+- Checklist persiapan sekolah digital
+
+#### Enhanced
+- UI/UX dengan desain modern dan responsif
+- Validasi form real-time
+- Optimasi performa upload dokumen
+- Sistem keamanan dan enkripsi data
+- Dashboard dengan visualisasi data
+
+#### Fixed
+- Perbaikan bug pada upload file besar
+- Optimasi query database
+- Perbaikan tampilan di perangkat mobile
+- Perbaikan validasi format dokumen
+- Perbaikan sistem notifikasi
+
+### [v0.9.0] - 2024-04-15
+#### Added
+- Prototype sistem pendaftaran dasar
+- Form pendaftaran basic
+- Login sistem
+- Upload dokumen basic
+- Dashboard sederhana
+
+#### Fixed
+- Bug pada sistem login
+- Masalah kompatibilitas browser
+- Error handling upload file
+
+### [v0.8.0] - 2024-03-01
+#### Added
+- Konsep desain awal
+- Struktur database dasar
+- Template sistem basic
