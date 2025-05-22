@@ -37,43 +37,43 @@ Sistem Penerimaan Peserta Didik Baru (PPDB) Online adalah aplikasi web yang memu
 ## Screenshots
 
 ### Halaman Login
-![Login](Screenshots/login.png)
+![Login](static/Screenshots/login.png)
 *Halaman login untuk siswa dan admin*
 
 ### Dashboard Admin
-![Dashboard Admin](Screenshots/dashboar%20admin.png)
+![Dashboard Admin](static/Screenshots/dashboar%20admin.png)
 *Panel kontrol untuk admin mengelola pendaftaran*
 
 ### Halaman Pendaftaran
-![Form Pendaftaran](Screenshots/pendaftaran.png)
+![Form Pendaftaran](static/Screenshots/pendaftaran.png)
 *Form pendaftaran siswa baru*
 
 ### Verifikasi Pendaftaran
-![Verifikasi](Screenshots/ferivikasi.png)
+![Verifikasi](static/Screenshots/ferivikasi.png)
 *Halaman verifikasi data pendaftar*
 
 ### Dashboard Siswa
-![Dashboard Siswa](static/Screenshots/dashboard siswa.png)
+![Dashboard Siswa](static/Screenshots/dashboard%20siswa.png)
 *Dashboard untuk siswa memantau status pendaftaran*
 
 ### Pembayaran
-![Pembayaran](Screenshots/pembayaran.png)
+![Pembayaran](static/Screenshots/pembayaran.png)
 *Halaman konfirmasi pembayaran*
 
 ### Kelola Jadwal
-![Kelola Jadwal](Screenshots/kelola%20jadwal.png)
+![Kelola Jadwal](static/Screenshots/kelola%20jadwal.png)
 *Halaman admin untuk mengatur jadwal orientasi*
 
 ### Grup WhatsApp
-![Grup WhatsApp](Screenshots/grup.png)
+![Grup WhatsApp](static/Screenshots/grup.png)
 *Manajemen grup WhatsApp per jurusan*
 
 ### Forum Diskusi
-![Forum](Screenshots/forum.png)
+![Forum](static/Screenshots/forum.png)
 *Forum diskusi untuk siswa baru*
 
 ### Materi Persiapan
-![Materi](Screenshots/materi.png)
+![Materi](static/Screenshots/materi.png)
 *Halaman materi persiapan sekolah*
 
 ## Struktur Aplikasi

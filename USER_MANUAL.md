@@ -1,7 +1,7 @@
 # 📘 User Manual - PPDB Online System
 
 <div align="center">
-  <img src="static/Screenshots/login.png" alt="PPDB Online Logo" width="200"/>
+  <img src="static/Screenshots/Screenshot (20).png" alt="PPDB Online Logo" width="200"/>
   <h3>Sistem Penerimaan Peserta Didik Baru Online</h3>
   <p>Panduan Lengkap Penggunaan Aplikasi</p>
 </div>
