@@ -36,27 +36,45 @@ Sistem Penerimaan Peserta Didik Baru (PPDB) Online adalah aplikasi web yang memu
 
 ## Screenshots
 
-### Landing Page
-![Landing Page](static/Screenshot/Screenshot_20.png)
-*Halaman landing berisi informasi pendaftaran*
+### Halaman Login
+![Login](Screenshots/login.png)
+*Halaman login untuk siswa dan admin*
+
+### Dashboard Admin
+![Dashboard Admin](Screenshots/dashboar%20admin.png)
+*Panel kontrol untuk admin mengelola pendaftaran*
+
+### Halaman Pendaftaran
+![Form Pendaftaran](Screenshots/pendaftaran.png)
+*Form pendaftaran siswa baru*
+
+### Verifikasi Pendaftaran
+![Verifikasi](Screenshots/ferivikasi.png)
+*Halaman verifikasi data pendaftar*
 
 ### Dashboard Siswa
-![Dashboard](static/Screenshot/daftar.png)
-(static/Screenshot/login.png)
-(static/Screenshot/pendaftaran.png)
-(static/Screenshot/.png)
-*Dashboard siswa dengan status pendaftaran*
+![Dashboard Siswa](Screenshots/dashboard%20siswa.png)
+*Dashboard untuk siswa memantau status pendaftaran*
 
-###siswa di verifikasi
-![Form Pendaftaran](static/Screenshot/Screenshot.png)
-*isi di dashboard siswa setelah di ferivikasi*
+### Pembayaran
+![Pembayaran](Screenshots/pembayaran.png)
+*Halaman konfirmasi pembayaran*
 
-### Admin Dashboard
-![Admin Dashboard](static/Screenshot/dashboar admin.png)
-(static/Screenshot/ferivikasi.png)
-(static/Screenshot/kelola jadwal.png)
-(static/Screenshot/kelola grup.png)
-*Dashboard admin untuk mengelola pendaftaran*
+### Kelola Jadwal
+![Kelola Jadwal](Screenshots/kelola%20jadwal.png)
+*Halaman admin untuk mengatur jadwal orientasi*
+
+### Grup WhatsApp
+![Grup WhatsApp](Screenshots/grup.png)
+*Manajemen grup WhatsApp per jurusan*
+
+### Forum Diskusi
+![Forum](Screenshots/forum.png)
+*Forum diskusi untuk siswa baru*
+
+### Materi Persiapan
+![Materi](Screenshots/materi.png)
+*Halaman materi persiapan sekolah*
 
 ## Struktur Aplikasi
 
